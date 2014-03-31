@@ -1,0 +1,669 @@
+#!/usr/bin/python
+
+"""
+Created By: sapamja
+Date: Sun Mar 30 13:04:11 IST 2014
+Email: sapamja@gmail.com
+"""
+
+# Add password verify with the old one
+# Add update password
+# update details
+
+import os
+import re
+import sys
+import md5
+import json
+import base64
+import hashlib
+import binascii
+import argparse
+import sqlite3
+
+from Crypto.Cipher import AES
+
+def pp(json_docs):
+    """preety print for json docs"""
+    print json.dumps(json_docs, indent=4)
+
+def get_md5(key):
+    return md5.new(key).hexdigest()
+
+def print_table(lod, args):
+    """
+    lod: list of dictionary
+    args: list of headers name which is the key in dictionary
+    """
+    try:
+        from prettytable import PrettyTable
+        pt = PrettyTable(border=True, horizontal_char='-',
+                field_names=[ x.title() for x in args ])
+
+        [ pt.align.__setitem__(x.title(), "l") for x in args ]
+
+        if isinstance(lod[0], dict):
+            [pt.add_row([x[item] for item in args]) for x in lod]
+        else:
+            [pt.add_row([x[i] for i in range(len(lod[0]))]) for x in lod]
+        return pt
+    except Exception:
+        pp(lod)
+
+def yes_no(arg):
+    print '%s [y|n]:' % arg,
+    if str(raw_input()).lower() == 'y':
+        return True
+    print 'Oops exiting!'
+    return False
+
+def get_input(msg=None, password=False):
+    if password:
+        if msg:
+            print '%s' % msg
+        import getpass
+        input_str = str(getpass.getpass())
+    else:
+        if msg:
+            print '%s:' % msg,
+        input_str = str(raw_input())
+    if input_str:
+        return input_str
+    else:
+        raise Exception ("Exiting: no input")
+
+class Setting(object):
+
+    """All the basic settings about the database will define here."""
+    # database name
+    db_name = 'pass_db.db'
+
+    # database path
+    db_path = '/var/tmp'
+
+    # dump database path
+    dump_path = '/%s/dump/' % db_path
+
+    # database table name
+    table_name = { 'password_manager': 'password_manager', 
+                   'passkey_manager' : 'passkey' }
+
+    # rquired column and type for the database table
+    column_table = {
+        'password_manager' : {
+            'unique_name': 'text',
+            'username': 'text',
+            'password': 'text',
+            'url': 'text',
+            'email': 'text',
+            'detail': 'text',
+            },
+        'passkey_manager' :{
+            'salt' : 'text',
+            'digest' : 'text',
+            }
+        }
+
+    # column name in order
+    column_order = {
+        'password_manager' : [ 'unique_name', 'username', 'password',
+                               'email', 'url', 'detail' ],
+        'passkey_manager' : ['salt', 'digest']
+    }
+
+class Cipher(object):
+
+    """Encryption and decryption of data"""
+    def __init__(self, passkey):
+        self.msg = None
+        self.passkey = get_md5(passkey)
+        self.encobj = AES.new(self.passkey, AES.MODE_ECB)
+        self.decobj = self.encobj
+
+    def get_password_digest(self, password, salt=None):
+        if not salt:
+            salt = base64.b64encode(os.urandom(32))
+        digest = hashlib.sha256(salt + password).hexdigest()
+        for x in range(0, 100001):
+            digest = hashlib.sha256(digest).hexdigest()
+        return salt, digest
+
+    def verify_password(self, password, salt, digest):
+        return self.get_password_digest(password, salt)[1] == digest
+
+    @staticmethod
+    def pad(msg):
+        """AES CBC encryption required text should be multiple of 16bytes"""
+        BS = 16
+        pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS) 
+        return pad(msg)
+
+    @staticmethod
+    def unpad(msg):
+        """Removed the pad bytes, to regain the original text"""
+        unpad = lambda s: s[0:-ord(s[-1])]
+        return unpad(msg)
+
+    def encrypt(self, msg):
+        """Encrypt the original msg before storing into the database"""
+        ciphertxt = self.encobj.encrypt(self.pad(msg))
+        return ciphertxt.encode('hex')
+        
+    def decrypt(self, ciphertxt):
+        """Decrypt for human reading"""
+        pad = self.decobj.decrypt(binascii.unhexlify(ciphertxt))
+        return self.unpad(pad)
+
+class Database(Setting, Cipher):
+    
+    """create db, create table, drop db, delete table. etc """
+    def __init__(self, args):
+        self.passkey = None 
+        self.argument = args
+
+    def connect(self):
+        """Connect to database"""
+        try:
+            self.conn = sqlite3.connect('%s/%s' %
+                (Setting.db_path, Setting.db_name))
+            self.cursor = self.conn.cursor()
+        except Exception as error:
+            raise Exception(error)
+
+    def execute(self, sql_cmd):
+        """Execute sql query"""
+        try:
+            self.connect()
+            result = self.cursor.execute(sql_cmd)
+        except sqlite3.OperationalError as error:
+            raise sqlite3.OperationalError(error)
+        else:
+            self.conn.commit()
+        return result 
+
+    def _create(self, table_name, **kwargs):
+        cmd = ', '.join([ '%s %s' % (k, kwargs[k]) for k in \
+              Setting.column_order[table_name]])
+
+        sql_cmd = ("CREATE TABLE {0}\
+                   (ID INTEGER PRIMARY KEY AUTOINCREMENT,\
+                   {1} )".format(table_name, cmd))
+        self.execute(sql_cmd)
+        print "Successfully created the database table: %s" % table_name
+
+    def _create_table(self):
+        """create table based on the config define in Setting class"""
+        for tb, dic in Setting.column_table.items():
+            self._create(tb, **dic)
+        return True
+
+    def _get_salt_digest(self):
+        """return salt, digest from db"""
+        sql_cmd = "SELECT * from passkey_manager ORDER BY ID DESC LIMIT 1"
+        try:
+            return self.execute(sql_cmd).fetchone()[1:]
+        except:
+            print 'Failed to get passkey from database'
+            print 'Do, you create passkey!'
+            sys.exit(1)
+        
+    def _is_password_correct(self):
+        """verify the passkey type by the user with the one store in db"""
+        salt, digest = self._get_salt_digest()
+        return self.verify_password(self.passkey, salt, digest)
+
+    def _drop(self, table_name):
+        """drop datbase table"""
+        return self.execute("DROP TABLE {0}".format(table_name))
+
+    def _drop_table(self):
+        """drop datbase table if passkey is verified"""
+        self.passkey = get_input(password=True)
+        if self._is_password_correct():
+            for table in Setting.table_name:
+                self._drop(table)
+                print "Successfully dropped the database table %s" % table
+            return True
+        else:
+            print 'Failed: passkey verification'
+            sys.exit(1)
+
+    def __call__(self):
+        
+        """Callable database class:"""
+        if self.argument['dump']:
+            self._dump_database()
+
+        elif self.argument['drop']:
+            if yes_no('Dropping the table'):
+                self._drop_table()
+
+        elif self.argument['import']:
+            self._import_database()
+
+        elif self.argument['create']:
+            self._create_table()
+
+class Finder(Database):
+
+    """Find data"""
+    def __init__(self, *args):
+        super(Finder, self).__init__(*args)
+
+    def is_exists(**kwargs):
+        """check: username, password, url exists in kwargs"""
+        if not kwargs.viewkeys() >= {'username', 'password', 'url'}:
+            return True
+
+    @staticmethod
+    def _map_column(value):
+        map_col_lod = list()
+        # adding id
+        _column = Setting.column_order['password_manager']
+        _column.insert(0, 'id')
+
+        for lol in value:
+            map_col_lod.append(dict(zip(_column, lol)))
+        return map_col_lod
+
+    def _match_it(self):
+        ret = list()
+        for dic in self._result_lod:
+            for x in self._match_dict.keys():
+                if re.search(self._match_dict[x], str(dic[x]), re.IGNORECASE):
+                    ret.append(dic)
+                    break
+        return ret
+
+    def select_all(self, decrypt=True):
+        sql_cmd = "SELECT * from {0}".format( \
+                Setting.table_name['password_manager'])
+        result = self.execute(sql_cmd)
+        decrypted = list()
+        if decrypt:
+            for c in result.fetchall():
+                to_decrypt = c[1:]
+                ls = [ self.decobj.decrypt(x) for x in to_decrypt ]
+                ls.insert(0, c[0])
+                decrypted.append(ls)
+        return decrypted
+
+    def __call__(self):
+        # get passkey from user
+        self.passkey = get_input(msg=None, password=True)
+        self.decobj = Cipher(self.passkey)
+
+        # verify passkey
+        if not self._is_password_correct():
+            print 'Failed: passkey verification'
+            sys.exit(1)
+
+        result = self.select_all()
+        self._result_lod = self._map_column(result)
+
+        if not self.argument['any']:
+            self._match_dict = dict([ (x, self.argument[x]) \
+                                        for x in Setting.column_order['password_manager'] \
+                                           if x in self.argument.keys() \
+                                        and self.argument[x] ])
+        else:
+            self._match_dict = dict([ (x, self.argument['any']) \
+                                        for x in Setting.column_order['password_manager'] \
+                                        ])
+
+        print print_table(self._match_it(), Setting.column_order['password_manager'])
+
+class Insert(Finder):
+
+    """Insert user data into the database"""
+    def __init__(self, *args):
+        super(Insert, self).__init__(*args)
+
+    def insert_data(self, **kwargs):    
+
+        """Encrypt and insert data"""
+        encrypted_dict = { key: self.cipobj.encrypt(kwargs[key]) \
+                           for key in kwargs.keys() }
+        sql_cmd = ("INSERT INTO {0} \
+                  (unique_name, username, password, email, url, detail) \
+                  VALUES ( '{unique_name}', '{username}', '{password}', \
+                           '{email}', '{url}', '{detail}')".format( \
+                            Setting.table_name['password_manager'], 
+                            **encrypted_dict ))
+
+        result = self.execute(sql_cmd)
+        kwargs['id'] = str(result.lastrowid)
+
+        print 'Successfully inserted:'
+        print print_table([kwargs], ["id", "unique_name", \
+                                     "username", "password", \
+                                     "email", "url", "detail"])
+
+    def __call__(self):
+
+        self.passkey = get_input(msg=None, password=True)
+        self.cipobj = Cipher(self.passkey)
+
+        # verify passkey
+        if not self._is_password_correct():
+            print 'Failed: passkey verification'
+            sys.exit(1)
+
+        """Callable class"""
+        # kwargs = { x: self.argument[x] for x in Setting.column_dict.keys() }
+        # return self.insert_data(**kwargs)
+        # from here is testing
+        from faker import Faker 
+        f = Faker()
+        for i in range(100):
+            kwargs = { 'unique_name': f.user_name(),
+                       'username' : f.name(),
+                       'password' : f.word(),
+                       'detail'   : f.sentence(1),
+                       'email'    : f.email(),
+                       'url'      : f.uri(),
+                     }
+            self.insert_data(**kwargs)
+
+
+class Update(Finder):
+
+    """Update user details."""
+    def __init__(self, *args):
+        super(Update, self).__init__(*args)
+
+    def _update_data(self, _id, **kwargs):
+
+        """Re-Encrypt data with new passkey and update data"""
+        self.cipobj = Cipher(self.passkey)
+        encrypted_dict = { key: self.cipobj.encrypt(kwargs[key]) \
+                           for key in kwargs.keys() }
+
+        sql_cmd = "UPDATE %s SET " % Setting.table_name['password_manager']
+
+        for c in Setting.column_order['password_manager']:
+            try:
+                sql_cmd += '%s = "%s", ' % (c, encrypted_dict[c])
+            except:
+                pass
+
+        # removing one space and coma
+        sql_cmd = sql_cmd[:-2]
+        sql_cmd += ' WHERE id = %s' % _id
+        self.execute(sql_cmd)
+
+    def _update_all_details(self):
+        all_result = self.select_all()
+        self.passkey = self.new_passkey
+        for lst in all_result:
+            kwargs = { 'unique_name': lst[1],
+                       'username'   : lst[2],
+                       'password'   : lst[3],
+                       'email'      : lst[4],
+                       'url'        : lst[5],
+                       'detail'     : lst[6],
+                     }
+            _id = lst[0]
+            self._update_data(_id, **kwargs)
+
+        print 'Successfully updated all the user details with the new pass key'
+        print 'Please verify using finder'
+
+    def __call__(self):
+
+        update_dict = {}
+        self.passkey = get_input(msg=None, password=True)
+        self.cipobj = Cipher(self.passkey)
+        # verify old passkey
+        if not self._is_password_correct():
+            print 'Failed: old passkey verification'
+            sys.exit(1)
+
+        for col in Setting.column_order['password_manager']:
+            try:
+                if self.argument[col]:
+                    update_dict[col] = self.argument[col]
+            except:
+                pass
+        if not update_dict:
+            print 'Nothing to update'
+            sys.exit(1)
+        self._update_data(self.argument['id'], **update_dict)
+        print 'Successfully updated.'
+
+class Passkey(Update):
+
+    """Create and Update passkey to unlock user details."""
+    def __init__(self, *args):
+        super(Update, self).__init__(*args)
+
+    def _is_exist_passkey(self):
+        sql_cmd = "SELECT * from passkey_manager ORDER BY ID DESC LIMIT 1"
+        return self.execute(sql_cmd).fetchone()
+
+    def _insert_passkey(self, pak):
+        salt, digest = self.get_password_digest(pak)
+        sql_cmd = "INSERT INTO passkey_manager (salt, digest) VALUES \
+                  ('{0}', '{1}')".format(salt, digest)
+        self.execute(sql_cmd)
+        print "Successfully created new passkey"
+        return True
+
+    def _update_passkey(self):
+
+        self.passkey = get_input(msg=None, password=True)
+        self.decobj = Cipher(self.passkey)
+        self.new_passkey = get_input('New', password=True)
+
+        # verify old passkey
+        if not self._is_password_correct():
+            print 'Failed: old passkey verification'
+            sys.exit(1)
+        print 'Successfully verified old passkey' 
+        
+        # updating passkey
+        self._insert_passkey(self.new_passkey)
+
+        # updating password_manager table with new passkey encryption
+        self._update_all_details()
+
+    def _create_passkey(self):
+        # check is there any passkey already exists
+        # if exists then request the user to update the passkey and
+        # re-encrypt the whole user details.
+        if not self._is_exist_passkey():
+            passkey = get_input("Enter your new passkey", password=True)
+            return self._insert_passkey(passkey)
+        else:
+            print "passkey already exists, please use [%s paskey --update]" % \
+                    __file__
+            return False
+
+    def __call__(self):
+        """Callable Class"""
+        if self.argument['create']:
+            self._create_passkey()
+        elif self.argument['update']:
+            self._update_passkey()
+
+def main():
+
+    """Main function."""
+    desc = "Personal Password Manager: "
+    epi = "Life is easier when you remember less"
+
+    # create top level parser
+    parser = argparse.ArgumentParser(description=desc,
+                               formatter_class=argparse.HelpFormatter,
+                               epilog=epi,
+                               prog="%s" % os.path.basename(__file__))
+
+    # create sub-parser
+    subparsers = parser.add_subparsers(title="sub-commands",
+                               help="sub-command help")
+
+    # create the parser for database command
+    database_parser = subparsers.add_parser("database",
+                               help="database related commands.")
+
+    database_mgroup = database_parser.add_mutually_exclusive_group(required=True)
+
+    database_mgroup.add_argument("--create",
+                               action='store_true',
+                               help="creating the database, configure table.") 
+    
+    database_mgroup.add_argument("--drop",
+                               action='store_true',
+                               help="drop database or destroy database.") 
+
+    database_mgroup.add_argument("--dump",
+                               action='store_true',
+                               help="dump the database")
+
+    database_mgroup.add_argument("--import",
+                               action='store_true',
+                               help="import database entries.")
+
+    database_parser.add_argument("--path", "--dp",
+                               type=str,
+                               default='%s' % Setting.dump_path,
+                               help="path to dump the database "\
+                                    "(default: %(default)s)") 
+
+    database_parser.add_argument("--file",
+                               type=str,
+                               help="full path to the database dump file.")
+
+    database_parser.add_argument("--format", 
+                               type=str,
+                               choices=['decrypt', 'encrypt'],
+                               default='encrypt',
+                               help="dump format, (default: %(default)s).")
+
+    database_parser.set_defaults(func=Database) 
+
+    # create the parser for insert command
+    # do insert if not exist else update
+    insert_parser = subparsers.add_parser("insert",
+                               help="insert related commands.")
+
+    insert_parser.add_argument("--username", "-un",
+                               type=str,
+                               required=True,
+                               help="login username.")
+
+    insert_parser.add_argument("--password", "-p",
+                               type=str,
+                               required=True,
+                               help="login password.")
+
+    insert_parser.add_argument("--email", 
+                               type=str,
+                               required=True,
+                               help="email id.")
+
+    insert_parser.add_argument("--unique-name", '-uqn',
+                               metavar='unique_name',
+                               type=str,
+                               required=True,
+                               help="unique name for the entry.")
+    
+    insert_parser.add_argument("--detail", '-d',
+                               type=str,
+                               default='no-details',
+                               help="detail about the entry.")
+
+    insert_parser.add_argument("--url", 
+                               type=str,
+                               required=True,
+                               help="login url.")
+    
+    insert_parser.set_defaults(func=Insert) 
+
+    # create the parser for finder command
+    finder_parser = subparsers.add_parser("finder",
+                               help="find details.")
+
+    finder_parser.add_argument("--username", "-un",
+                               type=str,
+                               help="match username.")
+
+    finder_parser.add_argument("--email", '-e',
+                               type=str,
+                               help="match email id.")
+
+    finder_parser.add_argument("--unique-name", '-uqn', 
+                               metavar='unique_name',
+                               type=str,
+                               help="match unique name.")
+
+    finder_parser.add_argument("--detail", '-d',
+                               type=str,
+                               help="match detail.")
+
+    finder_parser.add_argument("--url", 
+                               type=str,
+                               help="match url.")
+
+    finder_parser.add_argument("--any",
+                               type=str,
+                               help="match any string.")
+
+    finder_parser.set_defaults(func=Finder)
+
+
+    # create the parser for passkey command
+    passkey_parser = subparsers.add_parser("passkey",
+                               help="passkey create or update")
+
+    passkey_parser.add_argument("--create", "-c",
+                               action='store_true',
+                               help="create new passkey for the first time")
+
+    passkey_parser.add_argument("--update", "-u",
+                               action='store_true',
+                               help="update passkey, this will also update the \
+                                     user encryption details")
+
+    passkey_parser.set_defaults(func=Passkey)
+
+    # create the parser for update command
+    update_parser = subparsers.add_parser("update",
+                               help="update user details.")
+
+    update_parser.add_argument("--id",
+                               type=int,
+                               required=True,
+                               help="id which is unique")
+
+    update_parser.add_argument("--username", "-un",
+                               type=str,
+                               help="update username.")
+
+    update_parser.add_argument("--password", "-p",
+                               type=str,
+                               help="update password.")
+
+    update_parser.add_argument("--email", "-e",
+                               type=str,
+                               help="update email id.")
+
+    update_parser.add_argument("--unique-name", '-uqn',
+                               metavar='unique_name',
+                               type=str,
+                               help="update unique name.")
+
+    update_parser.add_argument("--detail", "-d",
+                               type=str,
+                               help="update detail.")
+
+    update_parser.add_argument("--url",
+                               type=str,
+                               help="update url.")
+
+    update_parser.set_defaults(func=Update)
+
+    args = parser.parse_args()
+    args.func(vars(args))()
+
+if __name__ == '__main__': main()
