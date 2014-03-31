@@ -45,9 +45,25 @@ I will come into detail about the various encryption and how I decrypt it.
 
 </p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<h3>Highlight about the usage: </h3>
+<pre><code>
+usage: psm.py [-h] {database,insert,finder,passkey,update} ...
+
+Personal Password Manager:
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+sub-commands:
+  {database,insert,finder,passkey,update}
+                        sub-command help
+    database            database related commands.
+    insert              insert related commands.
+    finder              find details.
+    passkey             passkey create or update
+    update              update user details.
+
+Life is easier when you remember less
 </code></pre>
 
 <p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
