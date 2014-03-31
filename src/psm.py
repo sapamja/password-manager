@@ -303,17 +303,21 @@ class Finder(Database):
         result = self.select_all()
         self._result_lod = self._map_column(result)
 
-        if not self.argument['any']:
+        if not self.argument['any'] and not self.argument['all']:
             self._match_dict = dict([ (x, self.argument[x]) \
                                         for x in Setting.column_order['password_manager'] \
                                            if x in self.argument.keys() \
                                         and self.argument[x] ])
-        else:
+            self._match_result = self._match_it()
+        elif self.argument['any']:
             self._match_dict = dict([ (x, self.argument['any']) \
                                         for x in Setting.column_order['password_manager'] \
                                         ])
+            self._match_result = self._match_it()
+        else:
+            self._match_result = self.select_all()
 
-        print print_table(self._match_it(), Setting.column_order['password_manager'])
+        print print_table(self._match_result, Setting.column_order['password_manager'])
 
 class Insert(Finder):
 
@@ -341,20 +345,36 @@ class Insert(Finder):
                                      "username", "password", \
                                      "email", "url", "detail"])
 
+    def is_exist(self, **kwargs):
+        required_check = ['username', 'email', 'url']
+        result_all = self.select_all(decrypt=True)
+        for lists in result_all:
+            if all(kwargs[item] in lists for item in required_check):
+                return True
+        return False
+
     def __call__(self):
 
         self.passkey = get_input(msg=None, password=True)
         self.cipobj = Cipher(self.passkey)
-
+        self.decobj = self.cipobj
         # verify passkey
         if not self._is_password_correct():
             print 'Failed: passkey verification'
             sys.exit(1)
 
         """Callable class"""
-        # kwargs = { x: self.argument[x] for x in Setting.column_dict.keys() }
-        # return self.insert_data(**kwargs)
+        """
+        kwargs = { x: self.argument[x] for x in Setting.column_order['password_manager'] }
+        if not self.is_exist(**kwargs):
+            return self.insert_data(**kwargs)
+        else:
+            print "Similar data exist, please check using finder."
+            print "You can't insert same [username, email and url] "\
+                  "which doesn't make sense."
+            return True
         # from here is testing
+        """
         from faker import Faker 
         f = Faker()
         for i in range(100):
@@ -617,6 +637,10 @@ def main():
     finder_parser.add_argument("--any",
                                type=str,
                                help="match any string.")
+
+    finder_parser.add_argument("--all",
+                               action="store_true",
+                               help="show all details")
 
     finder_parser.set_defaults(func=Finder)
 
