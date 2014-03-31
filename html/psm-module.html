@@ -96,7 +96,7 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="psm.Database-class.html" class="summary-name">Database</a><br />
-      create db, create table, drop db, delete table.
+      Create database table, drop table
     </td>
   </tr>
 <tr>
@@ -129,6 +129,15 @@
     </td><td class="summary">
         <a href="psm.Passkey-class.html" class="summary-name">Passkey</a><br />
       Create and Update passkey to unlock user details.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="psm.Export-class.html" class="summary-name">Export</a><br />
+      Export user details to file { encrypt or decrypt } base on the 
+        users
     </td>
   </tr>
 </table>
@@ -172,7 +181,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_md5"></a><span class="summary-sig-name">get_md5</span>(<span class="summary-sig-arg">key</span>)</span></td>
+          <td><span class="summary-sig"><a name="get_md5"></a><span class="summary-sig-name">get_md5</span>(<span class="summary-sig-arg">key</span>)</span><br />
+      return md5 hex for key</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="psm-pysrc.html#get_md5">source&nbsp;code</a></span>
             
@@ -188,10 +198,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="print_table"></a><span class="summary-sig-name">print_table</span>(<span class="summary-sig-arg">lod</span>,
+          <td><span class="summary-sig"><a href="psm-module.html#print_table" class="summary-sig-name">print_table</a>(<span class="summary-sig-arg">lod</span>,
         <span class="summary-sig-arg">args</span>)</span><br />
-      lod: list of dictionary args: list of headers name which is the key 
-      in dictionary</td>
+      Input: list of dictionary or list of list.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="psm-pysrc.html#print_table">source&nbsp;code</a></span>
             
@@ -207,7 +216,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="yes_no"></a><span class="summary-sig-name">yes_no</span>(<span class="summary-sig-arg">arg</span>)</span></td>
+          <td><span class="summary-sig"><a name="yes_no"></a><span class="summary-sig-name">yes_no</span>(<span class="summary-sig-arg">arg</span>)</span><br />
+      get input yes or no</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="psm-pysrc.html#yes_no">source&nbsp;code</a></span>
             
@@ -224,7 +234,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="get_input"></a><span class="summary-sig-name">get_input</span>(<span class="summary-sig-arg">msg</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">password</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">password</span>=<span class="summary-sig-default">False</span>)</span><br />
+      get user raw_input</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="psm-pysrc.html#get_input">source&nbsp;code</a></span>
             
@@ -286,6 +297,47 @@
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="print_table"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">print_table</span>(<span class="sig-arg">lod</span>,
+        <span class="sig-arg">args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="psm-pysrc.html#print_table">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Input: list of dictionary or list of list. Args: list of headers name 
+  which is the key in dictionary if preetyTable is not install then the 
+  output will be json format.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -351,7 +403,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Mar 31 20:15:24 2014
+    Generated by Epydoc 3.0.1 on Mon Mar 31 23:00:04 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
