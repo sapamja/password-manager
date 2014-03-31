@@ -487,6 +487,8 @@ class Passkey(Update):
             self._create_passkey()
         elif self.argument['update']:
             self._update_passkey()
+        else:
+            print "nothing to do, please check usage"
 
 class Export(Finder):
 
