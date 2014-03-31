@@ -1,5 +1,7 @@
 ## Unix Password Manager.
 
+Project page: http://sapamja.github.io/password-manager/
+
 
 ### AES Encryption
 
