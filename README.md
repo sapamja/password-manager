@@ -46,7 +46,7 @@ optional arguments:
                         dump format, (default: encrypt).
 ```
 
-### Finder Command
+### Finder command
 
 ```
 usage: psm.py finder [-h] [--username USERNAME] [--email EMAIL]
