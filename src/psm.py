@@ -516,9 +516,9 @@ def main():
                                action='store_true',
                                help="drop database or destroy database.") 
 
-    database_mgroup.add_argument("--dump",
+    database_mgroup.add_argument("--export",
                                action='store_true',
-                               help="dump the database")
+                               help="export the database table")
 
     database_mgroup.add_argument("--import",
                                action='store_true',
