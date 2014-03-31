@@ -15,6 +15,7 @@ import re
 import sys
 import md5
 import json
+import time
 import base64
 import hashlib
 import binascii
@@ -28,12 +29,14 @@ def pp(json_docs):
     print json.dumps(json_docs, indent=4)
 
 def get_md5(key):
+    """return md5 hex for key"""
     return md5.new(key).hexdigest()
 
 def print_table(lod, args):
     """
-    lod: list of dictionary
-    args: list of headers name which is the key in dictionary
+    Input: list of dictionary or list of list.
+    Args: list of headers name which is the key in dictionary
+    if preetyTable is not install then the output will be json format.
     """
     try:
         from prettytable import PrettyTable
@@ -51,6 +54,7 @@ def print_table(lod, args):
         pp(lod)
 
 def yes_no(arg):
+    """get input yes or no"""
     print '%s [y|n]:' % arg,
     if str(raw_input()).lower() == 'y':
         return True
@@ -58,6 +62,7 @@ def yes_no(arg):
     return False
 
 def get_input(msg=None, password=False):
+    """get user raw_input"""
     if password:
         if msg:
             print '%s' % msg
@@ -156,7 +161,7 @@ class Cipher(object):
 
 class Database(Setting, Cipher):
     
-    """create db, create table, drop db, delete table. etc """
+    """Create database table, drop table"""
     def __init__(self, args):
         self.passkey = None 
         self.argument = args
@@ -231,15 +236,9 @@ class Database(Setting, Cipher):
     def __call__(self):
         
         """Callable database class:"""
-        if self.argument['dump']:
-            self._dump_database()
-
-        elif self.argument['drop']:
+        if self.argument['drop']:
             if yes_no('Dropping the table'):
                 self._drop_table()
-
-        elif self.argument['import']:
-            self._import_database()
 
         elif self.argument['create']:
             self._create_table()
@@ -286,6 +285,9 @@ class Finder(Database):
                 ls = [ self.decobj.decrypt(x) for x in to_decrypt ]
                 ls.insert(0, c[0])
                 decrypted.append(ls)
+        else:
+            for c in result.fetchall():
+                decrypted.append(c)
         return decrypted
 
     def __call__(self):
@@ -486,6 +488,35 @@ class Passkey(Update):
         elif self.argument['update']:
             self._update_passkey()
 
+class Export(Finder):
+
+    """Export user details to file { encrypt or decrypt } base on the users"""
+    def __init__(self, *args):
+        super(Export, self).__init__(*args)
+        self.passkey = get_input(msg=None, password=True)
+        self.decobj = Cipher(self.passkey)
+
+    def __call__(self):
+
+        # verify passkey
+        if not self._is_password_correct():
+            print 'Failed: passkey verification'
+            sys.exit(1)
+        else:
+            if self.argument['format'] == 'decrypt':
+                result_all = self.select_all()
+            else:
+                result_all = self.select_all(decrypt=False)
+
+        path = self.argument['path']
+        export_file = '%s%s.json' % (path, str(time.time()).split('.')[0])
+
+        # open export file
+        with open(export_file, "w") as outfile:
+            json.dump(result_all, outfile, indent=4)
+        print 'Succesfully exported user details into %s' % export_file
+
+
 def main():
 
     """Main function."""
@@ -493,8 +524,8 @@ def main():
     epi = "Life is easier when you remember less"
 
     # create top level parser
-    parser = argparse.ArgumentParser(description=desc,
-                               formatter_class=argparse.HelpFormatter,
+    parser = argparse.ArgumentParser(description=desc, 
+                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                epilog=epi,
                                prog="%s" % os.path.basename(__file__))
 
@@ -515,30 +546,6 @@ def main():
     database_mgroup.add_argument("--drop",
                                action='store_true',
                                help="drop database or destroy database.") 
-
-    database_mgroup.add_argument("--export",
-                               action='store_true',
-                               help="export the database table")
-
-    database_mgroup.add_argument("--import",
-                               action='store_true',
-                               help="import database entries.")
-
-    database_parser.add_argument("--path", "--dp",
-                               type=str,
-                               default='%s' % Setting.dump_path,
-                               help="path to dump the database "\
-                                    "(default: %(default)s)") 
-
-    database_parser.add_argument("--file",
-                               type=str,
-                               help="full path to the database dump file.")
-
-    database_parser.add_argument("--format", 
-                               type=str,
-                               choices=['decrypt', 'encrypt'],
-                               default='encrypt',
-                               help="dump format, (default: %(default)s).")
 
     database_parser.set_defaults(func=Database) 
 
@@ -662,6 +669,37 @@ def main():
                                help="update url.")
 
     update_parser.set_defaults(func=Update)
+
+    # create the parser for export command
+    export_parser = subparsers.add_parser("export", 
+                               help="export user details options")
+
+    # Common options for import and export
+    export_parser.add_argument("--path",
+                               type=str,
+                               default='%s' % Setting.dump_path,
+                               help="path to dump the database "\
+                                    "(default: %(default)s)")
+
+    export_parser.add_argument("--format",
+                               type=str,
+                               choices=['decrypt', 'encrypt'],
+                               default='encrypt',
+                               help="export format, (default: %(default)s).")
+
+    export_parser.set_defaults(func=Export)
+
+    # create the parser for import command
+    import_parser = subparsers.add_parser("import", 
+                               help="import user details from file")
+    import_parser.add_argument("--file", '-f',
+                               type=str,
+                               help="full path to the import file.")
+
+    import_parser.add_argument("--format", 
+                               type=str,
+                               choices=['decrypt', 'encrypt'],
+                               help="current data format, if its encrypted or decrypted")
 
     args = parser.parse_args()
     args.func(vars(args))()
