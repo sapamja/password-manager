@@ -13,7 +13,6 @@ Email: sapamja@gmail.com
 import os
 import re
 import sys
-import md5
 import json
 import time
 import base64
@@ -30,7 +29,9 @@ def pp(json_docs):
 
 def get_md5(key):
     """return md5 hex for key"""
-    return md5.new(key).hexdigest()
+    md5 = hashlib.md5()
+    md5.update(key)
+    return md5.hexdigest()
 
 def print_table(lod, args):
     """
