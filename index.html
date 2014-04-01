@@ -70,22 +70,51 @@
                 <pre><code>sudo pip install pycrypto</code></pre>
                     
                 <h2>Implementation</h2>
-                <h3>Storing passkey in One Way Hash Function</h3>
+                <h3><a "http://en.wikipedia.org/wiki/One-way_function">Storing passkey in One Way Hash Function</a></h3>
+                
                     <p>
-                        One-way Hash Functions
-
                         The safe way of storing users' passwords is by running them through a one-way hash function. 
-                        A one-way hash function is a series of mathematical operations that transform some input into a sort of "fingerprint" 
-                        called a digest. If you run the password hunter2 through the popular cryptographic hash function SHA-256, you get the 
+                    </p>
+                    <p>
+                        In computer science, a one-way function is a function that is easy to compute on every input, 
+                        but hard to invert back.
+
+                        It is a series of mathematical operations that transform some input into a sort of "fingerprint" 
+                        called a digest. If you run the password `password123` through the popular cryptographic hash function SHA-256, you get the 
                         following digest (in hex):
                     </p>
-                        <p>f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7</p>
+                    <pre><code>
+                        >>> import os, base64, hashlib
+                        >>> def get_password_digest(password, salt=None):
+                        ...     if not salt:
+                        ...         salt = base64.b64encode(os.urandom(32))
+                        ...     digest = hashlib.sha256(salt + password).hexdigest()
+                        ...     for x in range(0, 100001):
+                        ...         digest = hashlib.sha256(digest).hexdigest()
+                        ...     return salt, digest
+                        ...
+                        >>>
+                        >>> def verify_password(password, salt, digest):
+                        ...     return self.get_password_digest(password, salt)[1] == digest
+                        ...
+                        >>> salt, digest = get_password_digest('password123')
+                        >>>
+                        >>> verify_password('password1', salt, digest)
+                        False
+                        >>> verify_password('password123', salt, digest)
+                        True
+                        >>>
+                    </pre></code>
+
+                    <p> In the above snippet you can see that, we created 
                     <p>
                         As the name implies, these functions are one-way, meaning you can turn something into a digest, but you can't turn 
                         the digest into what it originally was. i
                     </p>
-                    <p>When you setup this tool for the first time, you need to create passkey using this tool and that passkey is one way,
-                       you can't decrypt that passkey but you can update into a new passkey.
+                    <p>When you setup this tool for the first time, you need to create a passkey using this tool and that passkey is one way,
+                       you can't decrypt that passkey but you can update into a new passkey later when you want to change it.
+
+                       NB: Changing passkey means you need to re-encrypt your whole information with the new key.
 
                        We are going to use this passkey for all the future encryption to store the user information.
 
