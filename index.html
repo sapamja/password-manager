@@ -120,7 +120,7 @@ True
                 <li>Change the settings inside the script:</li>
                 <li><ul>Update database path</ul></li>
                 <li><ul>Update database name</ul></li>
-                <li><ul>dump path</ul></li>
+                <li><ul>Update dump path: to dump the user info for backup if you need</ul></li>
                 <h3>Step 2</h3>
                 <li>Create the database and table using the script</li>  
 <pre><code>
@@ -187,7 +187,42 @@ Password:
 +----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
 $:>
 </pre></code>
-                
+                <h4>Step 5</h4>
+                <li>Export the data in ecrypted format and plain text</li>
+<pre><code>
+
+$:>./unixpm.py export --format decrypt
+Password:
+Succesfully exported user details into //var/tmp/dump/1396357744.json
+$:>cat /var/tmp/dump/1396357744.json
+[
+    [
+        1,
+        "peemo1",
+        "kingkong",
+        "pingpong@123",
+        "king@kong.com",
+        "www.kingkong.com",
+        "This is just a testing entry for documentation"
+    ]
+]$:
+$:>./unixpm.py export --format encrypt
+Password:
+Succesfully exported user details into //var/tmp/dump/1396357788.json
+$:>cat /var/tmp/dump/1396357788.json
+[
+    [
+        1,
+        "08cd116d50f67b6c194f689f08859dc7",
+        "f851af3c05287719abb374c5413a6e5b",
+        "473c7ff5edc22055402092172baea2b2",
+        "d39765ccbd59a7bf7afe16056f3a9ab2",
+        "060f4f26377f67a34a2a683b4ca8b9f3d31d0ca2468fb1fea05b03ebde06d7d0",
+        "bf10a67c29436f830668969ea5fb7408290d9c0782b58a85ab06ab6d2c1ae7e115c3bd234c24c8bda5e93f83c8110589"
+    ]
+]$:>
+
+</pre></code> 
                 <h3>
                     <a name="highlight-about-the-usage" class="anchor" href="#highlight-about-the-usage">
                     <span class="octicon octicon-link"></span></a>Highlight about the usage
