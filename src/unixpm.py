@@ -365,7 +365,7 @@ class Insert(Finder):
             sys.exit(1)
 
         """Callable class"""
-        """
+
         kwargs = { x: self.argument[x] for x in Setting.column_order['password_manager'] }
         if not self.is_exist(**kwargs):
             return self.insert_data(**kwargs)
@@ -387,6 +387,7 @@ class Insert(Finder):
                        'url'      : f.uri(),
                      }
             self.insert_data(**kwargs)
+        """
 
 
 class Update(Finder):
