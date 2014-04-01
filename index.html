@@ -70,6 +70,26 @@
                 <pre><code>sudo pip install pycrypto</code></pre>
                     
                 <h2>Implementation</h2>
+                <h3>Storing passkey in One Way Hash Function</h3>
+                    <p>
+                        One-way Hash Functions
+
+                        The safe way of storing users' passwords is by running them through a one-way hash function. 
+                        A one-way hash function is a series of mathematical operations that transform some input into a sort of "fingerprint" 
+                        called a digest. If you run the password hunter2 through the popular cryptographic hash function SHA-256, you get the 
+                        following digest (in hex):
+                    </p>
+                        <p>f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7</p>
+                    <p>
+                        As the name implies, these functions are one-way, meaning you can turn something into a digest, but you can't turn 
+                        the digest into what it originally was. i
+                    </p>
+                    <p>When you setup this tool for the first time, you need to create passkey using this tool and that passkey is one way,
+                       you can't decrypt that passkey but you can update into a new passkey.
+
+                       We are going to use this passkey for all the future encryption to store the user information.
+
+                    </p>
                 <h2>Getting Started</h2>
                 <h2>Configuration</h2>
                 <h2>Start using it</h2>
