@@ -289,6 +289,7 @@ class Finder(Database):
         else:
             for c in result.fetchall():
                 decrypted.append(c)
+
         return decrypted
 
     def __call__(self):
@@ -532,12 +533,19 @@ class Export(Finder):
             else:
                 result_all = self.select_all(decrypt=False)
 
+        _col =  Setting.column_order['password_manager']
+        _col.insert(0, 'id')
+
+        result_lod = []
+        for all in result_all:
+            result_lod.append((dict(zip(_col, all))))
+        
         path = self.argument['path']
         export_file = '%s%s.json' % (path, str(time.time()).split('.')[0])
 
         # open export file
         with open(export_file, "w") as outfile:
-            json.dump(result_all, outfile, indent=4)
+            json.dump(result_lod, outfile, indent=4)
         print 'Succesfully exported user details into %s' % export_file
 
 
