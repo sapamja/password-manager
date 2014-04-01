@@ -85,26 +85,26 @@
                         following digest (in hex):
                     </p>
                     <pre><code>
-                        >>> import os, base64, hashlib
-                        >>> def get_password_digest(password, salt=None):
-                        ...     if not salt:
-                        ...         salt = base64.b64encode(os.urandom(32))
-                        ...     digest = hashlib.sha256(salt + password).hexdigest()
-                        ...     for x in range(0, 100001):
-                        ...         digest = hashlib.sha256(digest).hexdigest()
-                        ...     return salt, digest
-                        ...
-                        >>>
-                        >>> def verify_password(password, salt, digest):
-                        ...     return self.get_password_digest(password, salt)[1] == digest
-                        ...
-                        >>> salt, digest = get_password_digest('password123')
-                        >>>
-                        >>> verify_password('password1', salt, digest)
-                        False
-                        >>> verify_password('password123', salt, digest)
-                        True
-                        >>>
+>>> import os, base64, hashlib
+>>> def get_password_digest(password, salt=None):
+...     if not salt:
+...         salt = base64.b64encode(os.urandom(32))
+...     digest = hashlib.sha256(salt + password).hexdigest()
+...     for x in range(0, 100001):
+...         digest = hashlib.sha256(digest).hexdigest()
+...     return salt, digest
+...
+>>>
+>>> def verify_password(password, salt, digest):
+...     return self.get_password_digest(password, salt)[1] == digest
+...
+>>> salt, digest = get_password_digest('password123')
+>>>
+>>> verify_password('password1', salt, digest)
+False
+>>> verify_password('password123', salt, digest)
+True
+>>>
                     </pre></code>
 
                     <p> In the above snippet you can see that, we created 
