@@ -71,15 +71,10 @@
                     
                 <h2>Implementation</h2>
 
-                <h3>Storing passkey in One Way Hash Function<a href="http://en.wikipedia.org/wiki/One-way_function">Link to wiki</a></h3>
+                <h3>Generate passkey using one way hash function<a href="http://en.wikipedia.org/wiki/One-way_function"> wiki</a></h3>
                 
                     <p>
                         The safe way of storing users' passwords is by running them through a one-way hash function. 
-                    </p>
-                    <p>
-                        In computer science, a one-way function is a function that is easy to compute on every input, 
-                        but hard to invert back.
-
                         It is a series of mathematical operations that transform some input into a sort of "fingerprint" 
                         called a digest. If you run the password `password123` through the popular cryptographic hash function SHA-256, you get the 
                         following digest (in hex):
@@ -100,6 +95,8 @@
 ...
 >>> salt, digest = get_password_digest('password123')
 >>>
+>>> salt, digest
+        ('u+cQTr4lJ7zw4LDTTZOuHK8ey/Jw2QZN16hzbkx0ads=', '5a166dabe41070e079013e6f60a0ac483a73a966b6b15bfe7089c0c4833dbe25')
 >>> verify_password('password1', salt, digest)
 False
 >>> verify_password('password123', salt, digest)
@@ -107,19 +104,15 @@ True
 >>>
                     </pre></code>
 
-                    <p> In the above snippet you can see that, we created 
-                    <p>
-                        As the name implies, these functions are one-way, meaning you can turn something into a digest, but you can't turn 
-                        the digest into what it originally was. i
-                    </p>
-                    <p>When you setup this tool for the first time, you need to create a passkey using this tool and that passkey is one way,
-                       you can't decrypt that passkey but you can update into a new passkey later when you want to change it.
+                    <p> In the above snippet you can see that, we created one way hashed value by using hash function SHA-256.</p>
 
-                       NB: Changing passkey means you need to re-encrypt your whole information with the new key.
-
-                       We are going to use this passkey for all the future encryption to store the user information.
+                    Once you generate that passkey, you will use that key to encrypt or decrypt future data. So, please dont' forget it.
 
                     </p>
+                <h3>Data encryption<a href="https://www.dlitz.net/software/pycrypto/">pycrypto</a></h3>
+
+                <p> All the users information are encrypted using pyCrypto AES Encryption</p>
+                
                 <h2>Getting Started</h2>
                 <h2>Configuration</h2>
                 <h2>Start using it</h2>
