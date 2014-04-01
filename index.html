@@ -113,15 +113,80 @@ True
                     pycrypto official pages</p>
                 
                 <h2>Getting Started</h2>
+
+                <p>Assuming you already download the script from the github or tar file at the top of this page.</p>
+
                 <h3>Step 1</h3>
-                <li>Change the settings inside the script :</li>
+                <li>Change the settings inside the script:</li>
                 <li><ul>Update database path</ul></li>
                 <li><ul>Update database name</ul></li>
                 <li><ul>dump path</ul></li>
-
                 <h3>Step 2</h3>
-                
+                <li>Create the database and table using the script</li>  
+<pre><code>
+$:>./unixpm.py database --create
+Successfully created the database table: password_manager
+Successfully created the database table: passkey_manager
+$:>
 
+</pre></code>
+                <h3>Step 3</h3>
+                <li>Create passkey</li>
+<pre><code>
+$:>./unixpm.py passkey --create
+Enter your new passkey
+Password:
+Successfully created new passkey
+$:>
+</pre></code>
+                <h3>Step 4</h3>
+                <li>Start Inserting user info</li>
+
+<pre><code>
+$:>./unixpm.py insert --username kingkong --password pingpong@123 --unique-name peemo1 --email king@kong.com --url www.kingkong.com --detail 'This is just a testing entry for documentation'
+Password:
+Successfully inserted:
++-----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| Id  | Unique_Name | Username | Password     | Email         | Url              | Detail                                         |
++-----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| 101 | peemo1      | kingkong | pingpong@123 | king@kong.com | www.kingkong.com | This is just a testing entry for documentation |
++-----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+$:>
+$:>./unixpm.py insert --username kingkong --password pingpong@123 --unique-name peemo1 --email king@kong.com --url www.kingkong.com --detail 'This is just a testing entry for documentation'
+Password:
+Similar data exist, please check using finder.
+You can't insert same [username, email and url] which doesn't make sense.
+$:>
+</pre></code>
+
+                <h3>Step 5</h4>
+                <li>verify it</li>
+
+<pre><code>
+$:>./unixpm.py finder --any king
+Password:
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| Id | Unique_Name | Username | Password     | Email         | Url              | Detail                                         |
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| 1  | peemo1      | kingkong | pingpong@123 | king@kong.com | www.kingkong.com | This is just a testing entry for documentation |
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+$:>
+$:>./unixpm.py finder --url www.kingkong
+Password:
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| Id | Unique_Name | Username | Password     | Email         | Url              | Detail                                         |
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| 1  | peemo1      | kingkong | pingpong@123 | king@kong.com | www.kingkong.com | This is just a testing entry for documentation |
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+$:>./unixpm.py finder --all
+Password:
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| Id | Unique_Name | Username | Password     | Email         | Url              | Detail                                         |
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+| 1  | peemo1      | kingkong | pingpong@123 | king@kong.com | www.kingkong.com | This is just a testing entry for documentation |
++----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
+$:>
+</pre></code>
                 <h2>Configuration</h2>
 
                 <h2>Start using it</h2>
