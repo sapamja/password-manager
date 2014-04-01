@@ -35,14 +35,15 @@
                     <span class="credits left">Project maintained by <a href="https://github.com/sapamja">sapamja</a></span>
                     <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
                 </div>
-                <h3>
+                <h2>
                     <a name="welcome-to-unix-password-manager" class="anchor" href="#welcome-to-unix-password-manager"><span class="octicon octicon-link"></span></a>Welcome to Unix Password Manager
-                </h3>
+                </h2>
+
                 <p>If you found this pages right now then you are little early, I am currently undergoing development and there might be changes in page and implementation.</p>
                 <p>Basically this tool is to store your password into you local machine encrypted with a passkey.</p>
                 <p>I will come into detail about the various encryption and how I decrypt it.</p>
 
-                <h3>How this tool was born? </h3>
+                <h2>How this tool was born? </h2>
                 <p>
                     Since I start using computer I have to remember lots and lots of password from computer login to all my email account, banking details, blogers etc etc. 
                     After that I got a job and came into this IT world, now I ve to memorise SHIT LOTS of password including my official Email ID, VPN, 
@@ -60,7 +61,17 @@
                     Now I know its risky to store plain text password, so i ve to do something to hide or encrypt my password but i don't wanna use 
                     any third party password manager application. After that I start thinking about writing my own tools to encrypt all my details using some
                     Advanced encryption technology with a passkey so I can decrypt it later when ever i want.
+
+                </p>
+                <p>
+                    Then I choosed python as the highlevel language and sqlite3 as the backend data store.
+                    I used pycrypto as the encryption module which you need to install separately.
+                </p>
+                    <pre><code>sudo pip install pycrypto</code></pre>
+                    
+
                 <h2>Implementation</h2>
+                
                 
                 <h3>
                     <a name="highlight-about-the-usage" class="anchor" href="#highlight-about-the-usage">
