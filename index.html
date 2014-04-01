@@ -187,15 +187,12 @@ Password:
 +----+-------------+----------+--------------+---------------+------------------+------------------------------------------------+
 $:>
 </pre></code>
-                <h2>Configuration</h2>
-
-                <h2>Start using it</h2>
                 
                 <h3>
                     <a name="highlight-about-the-usage" class="anchor" href="#highlight-about-the-usage">
                     <span class="octicon octicon-link"></span></a>Highlight about the usage
                 </h3>
-                <pre><code>usage: psm.py [-h] {database,insert,finder,passkey,update} ...
+<pre><code>usage: ./unixpm.py [-h] {database,insert,finder,passkey,update} ...
 
 Personal Password Manager:
 
@@ -212,6 +209,86 @@ sub-commands:
     update              update user details.
 
 Life is easier when you remember less
+</code></pre>
+
+<code><pre>
+$:>./unixpm.py database -h
+usage: unixpm.py database [-h] (--create | --drop)
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --create    creating the database, configure table.
+  --drop      drop database or destroy database.
+$:>./unixpm.py insert -h
+usage: unixpm.py insert [-h] --username USERNAME --password PASSWORD --email
+                        EMAIL --unique-name unique_name [--detail DETAIL]
+                        --url URL
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --username USERNAME, -un USERNAME
+                        login username.
+  --password PASSWORD, -p PASSWORD
+                        login password.
+  --email EMAIL         email id.
+  --unique-name unique_name, -uqn unique_name
+                        unique name for the entry.
+  --detail DETAIL, -d DETAIL
+                        detail about the entry.
+  --url URL             login url.
+$:>./unixpm.py finder -h
+usage: unixpm.py finder [-h] [--username USERNAME] [--email EMAIL]
+                        [--unique-name unique_name] [--detail DETAIL]
+                        [--url URL] [--any ANY] [--all]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --username USERNAME, -un USERNAME
+                        match username.
+  --email EMAIL, -e EMAIL
+                        match email id.
+  --unique-name unique_name, -uqn unique_name
+                        match unique name.
+  --detail DETAIL, -d DETAIL
+                        match detail.
+  --url URL             match url.
+  --any ANY             match any string.
+  --all                 show all details
+$:>./unixpm.py passkey -h
+usage: unixpm.py passkey [-h] [--create] [--update]
+
+optional arguments:
+  -h, --help    show this help message and exit
+  --create, -c  create new passkey for the first time
+  --update, -u  update passkey, this will also update the user encryption
+                details
+$:>./unixpm.py insert -h
+usage: unixpm.py insert [-h] --username USERNAME --password PASSWORD --email
+                        EMAIL --unique-name unique_name [--detail DETAIL]
+                        --url URL
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --username USERNAME, -un USERNAME
+                        login username.
+  --password PASSWORD, -p PASSWORD
+                        login password.
+  --email EMAIL         email id.
+  --unique-name unique_name, -uqn unique_name
+                        unique name for the entry.
+  --detail DETAIL, -d DETAIL
+                        detail about the entry.
+  --url URL             login url.
+$:>./unixpm.py export -h
+usage: unixpm.py export [-h] [--path PATH] [--format {decrypt,encrypt}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --path PATH           path to dump the database (default: //var/tmp/dump/)
+  --format {decrypt,encrypt}
+                        export format, (default: encrypt).
+$:>
+
 </code></pre>
                 <h3>
                     <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact
