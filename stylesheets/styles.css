@@ -623,9 +623,9 @@ blockquote {
 }
 
 code {
-  font-family: Terminal, Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
+  font-family: Courier, Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
   color: #efefef;
-  font-size: 13px;
+  font-size: 12px;
   margin: 0 4px;
   padding: 4px 6px;
   -moz-border-radius: 2px;
@@ -654,7 +654,7 @@ pre {
   overflow-y: hidden;
 }
 pre code {
-  color: #efefef;
+  color: #C5B9B9;
   text-shadow: 0px 1px 0px #000;
   margin: 0;
   padding: 0;
