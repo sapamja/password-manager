@@ -1,5 +1,7 @@
 ## Unix Password Manager.
 
+Storing Encrypted user details including password, username, email or url with passkey.
+
 Project page: http://sapamja.github.io/password-manager/
 
 
