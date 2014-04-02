@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>psm.Passkey</title>
+  <title>unixpm.Delete</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -16,7 +16,7 @@
   <tr valign="middle">
   <!-- Home link -->
       <th>&nbsp;&nbsp;&nbsp;<a
-        href="psm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+        href="unixpm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -37,8 +37,8 @@
   <tr valign="top">
     <td width="100%">
       <span class="breadcrumbs">
-        <a href="psm-module.html">Module&nbsp;psm</a> ::
-        Class&nbsp;Passkey
+        <a href="unixpm-module.html">Module&nbsp;unixpm</a> ::
+        Class&nbsp;Delete
       </span>
     </td>
     <td>
@@ -48,34 +48,30 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="psm.Passkey-class.html"
+            >]&nbsp;|&nbsp;<a href="unixpm.Delete-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Passkey</h1><p class="nomargin-top"><span class="codelink"><a href="psm-pysrc.html#Passkey">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class Delete</h1><p class="nomargin-top"><span class="codelink"><a href="unixpm-pysrc.html#Delete">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-object --+                
-         |                
-   <a href="psm.Setting-class.html">Setting</a> --+            
-             |            
-object --+   |            
-         |   |            
-    <a href="psm.Cipher-class.html">Cipher</a> --+            
-             |            
-      <a href="psm.Database-class.html">Database</a> --+        
-                 |        
-            <a href="psm.Finder-class.html">Finder</a> --+    
-                     |    
-                <a href="psm.Update-class.html">Update</a> --+
-                         |
-                        <strong class="uidshort">Passkey</strong>
+object --+        
+         |        
+   <a href="unixpm.Setting-class.html">Setting</a> --+    
+             |    
+object --+   |    
+         |   |    
+    <a href="unixpm.Cipher-class.html">Cipher</a> --+    
+             |    
+      <a href="unixpm.Database-class.html">Database</a> --+
+                 |
+                <strong class="uidshort">Delete</strong>
 </pre>
 
 <hr />
-<p>Create and Update passkey to unlock user details.</p>
+<p>Delete user details from database using id</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -100,76 +96,11 @@ object --+   |
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="psm.Passkey-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="unixpm.Delete-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">*args</span>)</span><br />
       x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Passkey.__init__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="_is_exist_passkey"></a><span class="summary-sig-name">_is_exist_passkey</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Passkey._is_exist_passkey">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="_insert_passkey"></a><span class="summary-sig-name">_insert_passkey</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">pak</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Passkey._insert_passkey">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="_update_passkey"></a><span class="summary-sig-name">_update_passkey</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Passkey._update_passkey">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="_create_passkey"></a><span class="summary-sig-name">_create_passkey</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Passkey._create_passkey">source&nbsp;code</a></span>
+            <span class="codelink"><a href="unixpm-pysrc.html#Delete.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -183,10 +114,10 @@ object --+   |
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="psm.Passkey-class.html#__call__" class="summary-sig-name">__call__</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Callable Class</td>
+          <td><span class="summary-sig"><a href="unixpm.Delete-class.html#__call__" class="summary-sig-name">__call__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Callable database class:</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Passkey.__call__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="unixpm-pysrc.html#Delete.__call__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -196,34 +127,22 @@ object --+   |
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Update-class.html">Update</a></code></b> (private):
-      <code><a href="psm.Update-class.html#_update_all_details" onclick="show_private();">_update_all_details</a></code>,
-      <code><a href="psm.Update-class.html#_update_data" onclick="show_private();">_update_data</a></code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Finder-class.html">Finder</a></code></b>:
-      <code><a href="psm.Finder-class.html#is_exists">is_exists</a></code>,
-      <code><a href="psm.Finder-class.html#select_all">select_all</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Database-class.html">Database</a></code></b>:
+      <code><a href="unixpm.Database-class.html#connect">connect</a></code>,
+      <code><a href="unixpm.Database-class.html#execute">execute</a></code>
       </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Finder-class.html">Finder</a></code></b> (private):
-      <code><a href="psm.Finder-class.html#_match_it" onclick="show_private();">_match_it</a></code>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Database-class.html">Database</a></code></b> (private):
+      <code><a href="unixpm.Database-class.html#_create" onclick="show_private();">_create</a></code>,
+      <code><a href="unixpm.Database-class.html#_create_table" onclick="show_private();">_create_table</a></code>,
+      <code><a href="unixpm.Database-class.html#_drop" onclick="show_private();">_drop</a></code>,
+      <code><a href="unixpm.Database-class.html#_drop_table" onclick="show_private();">_drop_table</a></code>,
+      <code><a href="unixpm.Database-class.html#_get_salt_digest" onclick="show_private();">_get_salt_digest</a></code>
       </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Database-class.html">Database</a></code></b>:
-      <code><a href="psm.Database-class.html#connect">connect</a></code>,
-      <code><a href="psm.Database-class.html#execute">execute</a></code>
-      </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Database-class.html">Database</a></code></b> (private):
-      <code><a href="psm.Database-class.html#_create" onclick="show_private();">_create</a></code>,
-      <code><a href="psm.Database-class.html#_create_table" onclick="show_private();">_create_table</a></code>,
-      <code><a href="psm.Database-class.html#_drop" onclick="show_private();">_drop</a></code>,
-      <code><a href="psm.Database-class.html#_drop_table" onclick="show_private();">_drop_table</a></code>,
-      <code><a href="psm.Database-class.html#_get_salt_digest" onclick="show_private();">_get_salt_digest</a></code>,
-      <code><a href="psm.Database-class.html#_is_password_correct" onclick="show_private();">_is_password_correct</a></code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Cipher-class.html">Cipher</a></code></b>:
-      <code><a href="psm.Cipher-class.html#decrypt">decrypt</a></code>,
-      <code><a href="psm.Cipher-class.html#encrypt">encrypt</a></code>,
-      <code><a href="psm.Cipher-class.html#get_password_digest">get_password_digest</a></code>,
-      <code><a href="psm.Cipher-class.html#verify_password">verify_password</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Cipher-class.html">Cipher</a></code></b>:
+      <code><a href="unixpm.Cipher-class.html#decrypt">decrypt</a></code>,
+      <code><a href="unixpm.Cipher-class.html#encrypt">encrypt</a></code>,
+      <code><a href="unixpm.Cipher-class.html#get_password_digest">get_password_digest</a></code>,
+      <code><a href="unixpm.Cipher-class.html#verify_password">verify_password</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -261,12 +180,9 @@ object --+   |
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Finder-class.html">Finder</a></code></b> (private):
-      <code><a href="psm.Finder-class.html#_map_column" onclick="show_private();">_map_column</a></code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Cipher-class.html">Cipher</a></code></b>:
-      <code><a href="psm.Cipher-class.html#pad">pad</a></code>,
-      <code><a href="psm.Cipher-class.html#unpad">unpad</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Cipher-class.html">Cipher</a></code></b>:
+      <code><a href="unixpm.Cipher-class.html#pad">pad</a></code>,
+      <code><a href="unixpm.Cipher-class.html#unpad">unpad</a></code>
       </p>
     </td>
   </tr>
@@ -290,13 +206,13 @@ object --+   |
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Setting-class.html">Setting</a></code></b>:
-      <code><a href="psm.Setting-class.html#column_order">column_order</a></code>,
-      <code><a href="psm.Setting-class.html#column_table">column_table</a></code>,
-      <code><a href="psm.Setting-class.html#db_name">db_name</a></code>,
-      <code><a href="psm.Setting-class.html#db_path">db_path</a></code>,
-      <code><a href="psm.Setting-class.html#dump_path">dump_path</a></code>,
-      <code><a href="psm.Setting-class.html#table_name">table_name</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Setting-class.html">Setting</a></code></b>:
+      <code><a href="unixpm.Setting-class.html#column_order">column_order</a></code>,
+      <code><a href="unixpm.Setting-class.html#column_table">column_table</a></code>,
+      <code><a href="unixpm.Setting-class.html#db_name">db_name</a></code>,
+      <code><a href="unixpm.Setting-class.html#db_path">db_path</a></code>,
+      <code><a href="unixpm.Setting-class.html#dump_path">dump_path</a></code>,
+      <code><a href="unixpm.Setting-class.html#table_name">table_name</a></code>
       </p>
     </td>
   </tr>
@@ -320,6 +236,9 @@ object --+   |
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Database-class.html">Database</a></code></b> (private):
+      <code><a href="unixpm.Database-class.html#_is_password_correct" onclick="show_private();">_is_password_correct</a></code>
+      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -356,7 +275,7 @@ object --+   |
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="psm-pysrc.html#Passkey.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="unixpm-pysrc.html#Delete.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -380,14 +299,15 @@ object --+   |
     <br /><em class="fname">(Call operator)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="psm-pysrc.html#Passkey.__call__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="unixpm-pysrc.html#Delete.__call__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Callable Class</p>
+  <p>Callable database class:</p>
   <dl class="fields">
     <dt>Overrides:
-        <a href="psm.Database-class.html#__call__">Database.__call__</a>
+        <a href="unixpm.Database-class.html#__call__">Database.__call__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -399,7 +319,7 @@ object --+   |
   <tr valign="middle">
   <!-- Home link -->
       <th>&nbsp;&nbsp;&nbsp;<a
-        href="psm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+        href="unixpm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -419,7 +339,7 @@ object --+   |
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Mar 31 23:00:04 2014
+    Generated by Epydoc 3.0.1 on Wed Apr  2 11:52:19 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

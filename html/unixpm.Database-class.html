@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>psm.Insert</title>
+  <title>unixpm.Database</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -16,7 +16,7 @@
   <tr valign="middle">
   <!-- Home link -->
       <th>&nbsp;&nbsp;&nbsp;<a
-        href="psm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+        href="unixpm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -37,8 +37,8 @@
   <tr valign="top">
     <td width="100%">
       <span class="breadcrumbs">
-        <a href="psm-module.html">Module&nbsp;psm</a> ::
-        Class&nbsp;Insert
+        <a href="unixpm-module.html">Module&nbsp;unixpm</a> ::
+        Class&nbsp;Database
       </span>
     </td>
     <td>
@@ -48,32 +48,34 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="psm.Insert-class.html"
+            >]&nbsp;|&nbsp;<a href="unixpm.Database-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Insert</h1><p class="nomargin-top"><span class="codelink"><a href="psm-pysrc.html#Insert">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class Database</h1><p class="nomargin-top"><span class="codelink"><a href="unixpm-pysrc.html#Database">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-object --+            
-         |            
-   <a href="psm.Setting-class.html">Setting</a> --+        
-             |        
-object --+   |        
-         |   |        
-    <a href="psm.Cipher-class.html">Cipher</a> --+        
-             |        
-      <a href="psm.Database-class.html">Database</a> --+    
-                 |    
-            <a href="psm.Finder-class.html">Finder</a> --+
-                     |
-                    <strong class="uidshort">Insert</strong>
+object --+    
+         |    
+   <a href="unixpm.Setting-class.html">Setting</a> --+
+             |
+object --+   |
+         |   |
+    <a href="unixpm.Cipher-class.html">Cipher</a> --+
+             |
+            <strong class="uidshort">Database</strong>
 </pre>
 
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="unixpm.Delete-class.html">Delete</a></li><li>, <a href="unixpm.Finder-class.html">Finder</a></li>  </ul>
+</dd></dl>
+
 <hr />
-<p>Insert user data into the database</p>
+<p>Create database table, drop table</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -98,11 +100,11 @@ object --+   |
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="psm.Insert-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>)</span><br />
+          <td><span class="summary-sig"><a href="unixpm.Database-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">args</span>)</span><br />
       x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Insert.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="unixpm-pysrc.html#Database.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -116,11 +118,10 @@ object --+   |
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="insert_data"></a><span class="summary-sig-name">insert_data</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
-      Encrypt and insert data</td>
+          <td><span class="summary-sig"><a name="connect"></a><span class="summary-sig-name">connect</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Connect to database</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Insert.insert_data">source&nbsp;code</a></span>
+            <span class="codelink"><a href="unixpm-pysrc.html#Database.connect">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -134,10 +135,98 @@ object --+   |
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="is_exist"></a><span class="summary-sig-name">is_exist</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="execute"></a><span class="summary-sig-name">execute</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sql_cmd</span>)</span><br />
+      Execute sql query</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="unixpm-pysrc.html#Database.execute">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_create"></a><span class="summary-sig-name">_create</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">table_name</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Insert.is_exist">source&nbsp;code</a></span>
+            <span class="codelink"><a href="unixpm-pysrc.html#Database._create">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_create_table"></a><span class="summary-sig-name">_create_table</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      create table based on the config define in Setting class</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="unixpm-pysrc.html#Database._create_table">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_get_salt_digest"></a><span class="summary-sig-name">_get_salt_digest</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return salt, digest from db</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="unixpm-pysrc.html#Database._get_salt_digest">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_drop"></a><span class="summary-sig-name">_drop</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">table_name</span>)</span><br />
+      drop datbase table</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="unixpm-pysrc.html#Database._drop">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_drop_table"></a><span class="summary-sig-name">_drop_table</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      drop datbase table if passkey is verified</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="unixpm-pysrc.html#Database._drop_table">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -151,10 +240,10 @@ object --+   |
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="psm.Insert-class.html#__call__" class="summary-sig-name">__call__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a name="__call__"></a><span class="summary-sig-name">__call__</span>(<span class="summary-sig-arg">self</span>)</span><br />
       Callable database class:</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="psm-pysrc.html#Insert.__call__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="unixpm-pysrc.html#Database.__call__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -164,30 +253,11 @@ object --+   |
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Finder-class.html">Finder</a></code></b>:
-      <code><a href="psm.Finder-class.html#is_exists">is_exists</a></code>,
-      <code><a href="psm.Finder-class.html#select_all">select_all</a></code>
-      </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Finder-class.html">Finder</a></code></b> (private):
-      <code><a href="psm.Finder-class.html#_match_it" onclick="show_private();">_match_it</a></code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Database-class.html">Database</a></code></b>:
-      <code><a href="psm.Database-class.html#connect">connect</a></code>,
-      <code><a href="psm.Database-class.html#execute">execute</a></code>
-      </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Database-class.html">Database</a></code></b> (private):
-      <code><a href="psm.Database-class.html#_create" onclick="show_private();">_create</a></code>,
-      <code><a href="psm.Database-class.html#_create_table" onclick="show_private();">_create_table</a></code>,
-      <code><a href="psm.Database-class.html#_drop" onclick="show_private();">_drop</a></code>,
-      <code><a href="psm.Database-class.html#_drop_table" onclick="show_private();">_drop_table</a></code>,
-      <code><a href="psm.Database-class.html#_get_salt_digest" onclick="show_private();">_get_salt_digest</a></code>,
-      <code><a href="psm.Database-class.html#_is_password_correct" onclick="show_private();">_is_password_correct</a></code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Cipher-class.html">Cipher</a></code></b>:
-      <code><a href="psm.Cipher-class.html#decrypt">decrypt</a></code>,
-      <code><a href="psm.Cipher-class.html#encrypt">encrypt</a></code>,
-      <code><a href="psm.Cipher-class.html#get_password_digest">get_password_digest</a></code>,
-      <code><a href="psm.Cipher-class.html#verify_password">verify_password</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Cipher-class.html">Cipher</a></code></b>:
+      <code><a href="unixpm.Cipher-class.html#decrypt">decrypt</a></code>,
+      <code><a href="unixpm.Cipher-class.html#encrypt">encrypt</a></code>,
+      <code><a href="unixpm.Cipher-class.html#get_password_digest">get_password_digest</a></code>,
+      <code><a href="unixpm.Cipher-class.html#verify_password">verify_password</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -225,12 +295,9 @@ object --+   |
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Finder-class.html">Finder</a></code></b> (private):
-      <code><a href="psm.Finder-class.html#_map_column" onclick="show_private();">_map_column</a></code>
-      </p></div>
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Cipher-class.html">Cipher</a></code></b>:
-      <code><a href="psm.Cipher-class.html#pad">pad</a></code>,
-      <code><a href="psm.Cipher-class.html#unpad">unpad</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Cipher-class.html">Cipher</a></code></b>:
+      <code><a href="unixpm.Cipher-class.html#pad">pad</a></code>,
+      <code><a href="unixpm.Cipher-class.html#unpad">unpad</a></code>
       </p>
     </td>
   </tr>
@@ -254,13 +321,13 @@ object --+   |
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="psm.Setting-class.html">Setting</a></code></b>:
-      <code><a href="psm.Setting-class.html#column_order">column_order</a></code>,
-      <code><a href="psm.Setting-class.html#column_table">column_table</a></code>,
-      <code><a href="psm.Setting-class.html#db_name">db_name</a></code>,
-      <code><a href="psm.Setting-class.html#db_path">db_path</a></code>,
-      <code><a href="psm.Setting-class.html#dump_path">dump_path</a></code>,
-      <code><a href="psm.Setting-class.html#table_name">table_name</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="unixpm.Setting-class.html">Setting</a></code></b>:
+      <code><a href="unixpm.Setting-class.html#column_order">column_order</a></code>,
+      <code><a href="unixpm.Setting-class.html#column_table">column_table</a></code>,
+      <code><a href="unixpm.Setting-class.html#db_name">db_name</a></code>,
+      <code><a href="unixpm.Setting-class.html#db_path">db_path</a></code>,
+      <code><a href="unixpm.Setting-class.html#dump_path">dump_path</a></code>,
+      <code><a href="unixpm.Setting-class.html#table_name">table_name</a></code>
       </p>
     </td>
   </tr>
@@ -282,6 +349,14 @@ object --+   |
     </table>
   </td>
 </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="unixpm.Database-class.html#_is_password_correct" class="summary-name" onclick="show_private();">_is_password_correct</a><br />
+      verify the passkey type by the user with the one store in db
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -316,11 +391,11 @@ object --+   |
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">*args</span>)</span>
+        <span class="sig-arg">args</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="psm-pysrc.html#Insert.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="unixpm-pysrc.html#Database.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -333,27 +408,37 @@ object --+   |
   </dl>
 </td></tr></table>
 </div>
-<a name="__call__"></a>
-<div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_is_password_correct"></a>
+<div class="private">
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__call__</span>(<span class="sig-arg">self</span>)</span>
-    <br /><em class="fname">(Call operator)</em>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="psm-pysrc.html#Insert.__call__">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Callable database class:</p>
+  <h3 class="epydoc">_is_password_correct</h3>
+  <p>verify the passkey type by the user with the one store in db</p>
   <dl class="fields">
-    <dt>Overrides:
-        <a href="psm.Database-class.html#__call__">Database.__call__</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>._is_password_correct(<span class="summary-sig-arg">self</span>)</span>
+        - verify the passkey type by the user with the one store in db
+    </dd>
   </dl>
 </td></tr></table>
 </div>
@@ -364,7 +449,7 @@ object --+   |
   <tr valign="middle">
   <!-- Home link -->
       <th>&nbsp;&nbsp;&nbsp;<a
-        href="psm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+        href="unixpm-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -384,7 +469,7 @@ object --+   |
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Mar 31 23:00:04 2014
+    Generated by Epydoc 3.0.1 on Wed Apr  2 11:52:19 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
