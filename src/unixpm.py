@@ -23,15 +23,18 @@ import sqlite3
 
 from Crypto.Cipher import AES
 
+
 def pp(json_docs):
     """preety print for json docs"""
     print json.dumps(json_docs, indent=4)
+
 
 def get_md5(key):
     """return md5 hex for key"""
     md5 = hashlib.md5()
     md5.update(key)
     return md5.hexdigest()
+
 
 def print_table(lod, args):
     """
@@ -42,9 +45,9 @@ def print_table(lod, args):
     try:
         from prettytable import PrettyTable
         pt = PrettyTable(border=True, horizontal_char='-',
-                field_names=[ x.title() for x in args ])
+                         field_names=[x.title() for x in args])
 
-        [ pt.align.__setitem__(x.title(), "l") for x in args ]
+        [pt.align.__setitem__(x.title(), "l") for x in args]
 
         if isinstance(lod[0], dict):
             [pt.add_row([x[item] for item in args]) for x in lod]
@@ -54,6 +57,7 @@ def print_table(lod, args):
     except Exception:
         pp(lod)
 
+
 def yes_no(arg):
     """get input yes or no"""
     print '%s [y|n]:' % arg,
@@ -61,6 +65,7 @@ def yes_no(arg):
         return True
     print 'Oops exiting!'
     return False
+
 
 def get_input(msg=None, password=False):
     """get user raw_input"""
@@ -76,7 +81,8 @@ def get_input(msg=None, password=False):
     if input_str:
         return input_str
     else:
-        raise Exception ("Exiting: no input")
+        raise Exception("Exiting: no input")
+
 
 class Setting(object):
 
@@ -91,35 +97,37 @@ class Setting(object):
     dump_path = '/%s/dump/' % db_path
 
     # database table name
-    table_name = { 'password_manager': 'password_manager', 
-                   'passkey_manager' : 'passkey' }
+    table_name = {'password_manager': 'password_manager',
+                  'passkey_manager': 'passkey'}
 
     # rquired column and type for the database table
     column_table = {
-        'password_manager' : {
+        'password_manager': {
             'unique_name': 'text',
             'username': 'text',
             'password': 'text',
             'url': 'text',
             'email': 'text',
             'detail': 'text',
-            },
-        'passkey_manager' :{
-            'salt' : 'text',
-            'digest' : 'text',
-            }
+        },
+        'passkey_manager': {
+            'salt': 'text',
+            'digest': 'text',
         }
+    }
 
     # column name in order
     column_order = {
-        'password_manager' : [ 'unique_name', 'username', 'password',
-                               'email', 'url', 'detail' ],
-        'passkey_manager' : ['salt', 'digest']
+        'password_manager': ['unique_name', 'username', 'password',
+                             'email', 'url', 'detail'],
+        'passkey_manager': ['salt', 'digest']
     }
+
 
 class Cipher(object):
 
     """Encryption and decryption of data"""
+
     def __init__(self, passkey):
         self.msg = None
         self.passkey = get_md5(passkey)
@@ -141,7 +149,7 @@ class Cipher(object):
     def pad(msg):
         """AES CBC encryption required text should be multiple of 16bytes"""
         BS = 16
-        pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS) 
+        pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
         return pad(msg)
 
     @staticmethod
@@ -154,24 +162,26 @@ class Cipher(object):
         """Encrypt the original msg before storing into the database"""
         ciphertxt = self.encobj.encrypt(self.pad(msg))
         return ciphertxt.encode('hex')
-        
+
     def decrypt(self, ciphertxt):
         """Decrypt for human reading"""
         pad = self.decobj.decrypt(binascii.unhexlify(ciphertxt))
         return self.unpad(pad)
 
+
 class Database(Setting, Cipher):
-    
+
     """Create database table, drop table"""
+
     def __init__(self, args):
-        self.passkey = None 
+        self.passkey = None
         self.argument = args
 
     def connect(self):
         """Connect to database"""
         try:
             self.conn = sqlite3.connect('%s/%s' %
-                (Setting.db_path, Setting.db_name))
+                                        (Setting.db_path, Setting.db_name))
             self.cursor = self.conn.cursor()
         except Exception as error:
             raise Exception(error)
@@ -185,10 +195,10 @@ class Database(Setting, Cipher):
             raise sqlite3.OperationalError(error)
         else:
             self.conn.commit()
-        return result 
+        return result
 
     def _create(self, table_name, **kwargs):
-        cmd = ', '.join([ '%s %s' % (k, kwargs[k]) for k in \
+        cmd = ', '.join(['%s %s' % (k, kwargs[k]) for k in
               Setting.column_order[table_name]])
 
         sql_cmd = ("CREATE TABLE {0}\
@@ -212,7 +222,7 @@ class Database(Setting, Cipher):
             print 'Failed to get passkey from database'
             print 'Do, you create passkey!'
             sys.exit(1)
-        
+
     def _is_password_correct(self):
         """verify the passkey type by the user with the one store in db"""
         salt, digest = self._get_salt_digest()
@@ -235,7 +245,6 @@ class Database(Setting, Cipher):
             sys.exit(1)
 
     def __call__(self):
-        
         """Callable database class:"""
         if self.argument['drop']:
             if yes_no('Dropping the table'):
@@ -244,9 +253,11 @@ class Database(Setting, Cipher):
         elif self.argument['create']:
             self._create_table()
 
+
 class Finder(Database):
 
     """Find data"""
+
     def __init__(self, *args):
         super(Finder, self).__init__(*args)
 
@@ -276,14 +287,14 @@ class Finder(Database):
         return ret
 
     def select_all(self, decrypt=True):
-        sql_cmd = "SELECT * from {0}".format( \
-                Setting.table_name['password_manager'])
+        sql_cmd = "SELECT * from {0}".format(
+            Setting.table_name['password_manager'])
         result = self.execute(sql_cmd)
         decrypted = list()
         if decrypt:
             for c in result.fetchall():
                 to_decrypt = c[1:]
-                ls = [ self.decobj.decrypt(x) for x in to_decrypt ]
+                ls = [self.decobj.decrypt(x) for x in to_decrypt]
                 ls.insert(0, c[0])
                 decrypted.append(ls)
         else:
@@ -306,45 +317,46 @@ class Finder(Database):
         self._result_lod = self._map_column(result)
 
         if not self.argument['any'] and not self.argument['all']:
-            self._match_dict = dict([ (x, self.argument[x]) \
-                                        for x in Setting.column_order['password_manager'] \
-                                           if x in self.argument.keys() \
-                                        and self.argument[x] ])
+            self._match_dict = dict([(x, self.argument[x])
+                                     for x in Setting.column_order['password_manager']
+                                     if x in self.argument.keys()
+                                     and self.argument[x]])
             self._match_result = self._match_it()
         elif self.argument['any']:
-            self._match_dict = dict([ (x, self.argument['any']) \
-                                        for x in Setting.column_order['password_manager'] \
-                                        ])
+            self._match_dict = dict([(x, self.argument['any'])
+                                     for x in Setting.column_order['password_manager']
+                                     ])
             self._match_result = self._match_it()
         else:
             self._match_result = self.select_all()
 
         print print_table(self._match_result, Setting.column_order['password_manager'])
 
+
 class Insert(Finder):
 
     """Insert user data into the database"""
+
     def __init__(self, *args):
         super(Insert, self).__init__(*args)
 
-    def insert_data(self, **kwargs):    
-
+    def insert_data(self, **kwargs):
         """Encrypt and insert data"""
-        encrypted_dict = { key: self.cipobj.encrypt(kwargs[key]) \
-                           for key in kwargs.keys() }
+        encrypted_dict = {key: self.cipobj.encrypt(kwargs[key])
+                          for key in kwargs.keys()}
         sql_cmd = ("INSERT INTO {0} \
                   (unique_name, username, password, email, url, detail) \
                   VALUES ( '{unique_name}', '{username}', '{password}', \
-                           '{email}', '{url}', '{detail}')".format( \
-                            Setting.table_name['password_manager'], 
-                            **encrypted_dict ))
+                           '{email}', '{url}', '{detail}')".format(
+            Setting.table_name['password_manager'],
+            **encrypted_dict))
 
         result = self.execute(sql_cmd)
         kwargs['id'] = str(result.lastrowid)
 
         print 'Successfully inserted:'
-        print print_table([kwargs], ["id", "unique_name", \
-                                     "username", "password", \
+        print print_table([kwargs], ["id", "unique_name",
+                                     "username", "password",
                                      "email", "url", "detail"])
 
     def is_exist(self, **kwargs):
@@ -367,7 +379,8 @@ class Insert(Finder):
 
         """Callable class"""
 
-        kwargs = { x: self.argument[x] for x in Setting.column_order['password_manager'] }
+        kwargs = {x: self.argument[x]
+                  for x in Setting.column_order['password_manager']}
         if not self.is_exist(**kwargs):
             return self.insert_data(**kwargs)
         else:
@@ -377,7 +390,7 @@ class Insert(Finder):
             return True
         # from here is testing
         """
-        from faker import Faker 
+        from faker import Faker
         f = Faker()
         for i in range(100):
             kwargs = { 'unique_name': f.user_name(),
@@ -394,15 +407,15 @@ class Insert(Finder):
 class Update(Finder):
 
     """Update user details."""
+
     def __init__(self, *args):
         super(Update, self).__init__(*args)
 
     def _update_data(self, _id, **kwargs):
-
         """Re-Encrypt data with new passkey and update data"""
         self.cipobj = Cipher(self.passkey)
-        encrypted_dict = { key: self.cipobj.encrypt(kwargs[key]) \
-                           for key in kwargs.keys() }
+        encrypted_dict = {key: self.cipobj.encrypt(kwargs[key])
+                          for key in kwargs.keys()}
 
         sql_cmd = "UPDATE %s SET " % Setting.table_name['password_manager']
 
@@ -421,13 +434,13 @@ class Update(Finder):
         all_result = self.select_all()
         self.passkey = self.new_passkey
         for lst in all_result:
-            kwargs = { 'unique_name': lst[1],
-                       'username'   : lst[2],
-                       'password'   : lst[3],
-                       'email'      : lst[4],
-                       'url'        : lst[5],
-                       'detail'     : lst[6],
-                     }
+            kwargs = {'unique_name': lst[1],
+                      'username': lst[2],
+                      'password': lst[3],
+                      'email': lst[4],
+                      'url': lst[5],
+                      'detail': lst[6],
+                      }
             _id = lst[0]
             self._update_data(_id, **kwargs)
 
@@ -456,9 +469,11 @@ class Update(Finder):
         self._update_data(self.argument['id'], **update_dict)
         print 'Successfully updated.'
 
+
 class Passkey(Update):
 
     """Create and Update passkey to unlock user details."""
+
     def __init__(self, *args):
         super(Update, self).__init__(*args)
 
@@ -484,8 +499,8 @@ class Passkey(Update):
         if not self._is_password_correct():
             print 'Failed: old passkey verification'
             sys.exit(1)
-        print 'Successfully verified old passkey' 
-        
+        print 'Successfully verified old passkey'
+
         # updating passkey
         self._insert_passkey(self.new_passkey)
 
@@ -501,7 +516,7 @@ class Passkey(Update):
             return self._insert_passkey(passkey)
         else:
             print "passkey already exists, please use [%s paskey --update]" % \
-                    __file__
+                __file__
             return False
 
     def __call__(self):
@@ -513,9 +528,11 @@ class Passkey(Update):
         else:
             print "nothing to do, please check usage"
 
+
 class Export(Finder):
 
     """Export user details to file { encrypt or decrypt } base on the users"""
+
     def __init__(self, *args):
         super(Export, self).__init__(*args)
         self.passkey = get_input(msg=None, password=True)
@@ -533,13 +550,13 @@ class Export(Finder):
             else:
                 result_all = self.select_all(decrypt=False)
 
-        _col =  Setting.column_order['password_manager']
+        _col = Setting.column_order['password_manager']
         _col.insert(0, 'id')
 
         result_lod = []
         for all in result_all:
             result_lod.append((dict(zip(_col, all))))
-        
+
         path = self.argument['path']
         export_file = '%s%s.json' % (path, str(time.time()).split('.')[0])
 
@@ -550,41 +567,41 @@ class Export(Finder):
 
 
 def main():
-
     """Main function."""
     desc = "Personal Password Manager: "
     epi = "Life is easier when you remember less"
 
     # create top level parser
-    parser = argparse.ArgumentParser(description=desc, 
-                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                               epilog=epi,
-                               prog="%s" % os.path.basename(__file__))
+    parser = argparse.ArgumentParser(description=desc,
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                     epilog=epi,
+                                     prog="%s" % os.path.basename(__file__))
 
     # create sub-parser
     subparsers = parser.add_subparsers(title="sub-commands",
-                               help="sub-command help")
+                                       help="sub-command help")
 
     # create the parser for database command
     database_parser = subparsers.add_parser("database",
-                               help="database related commands.")
+                                            help="database related commands.")
 
-    database_mgroup = database_parser.add_mutually_exclusive_group(required=True)
+    database_mgroup = database_parser.add_mutually_exclusive_group(
+        required=True)
 
     database_mgroup.add_argument("--create",
-                               action='store_true',
-                               help="creating the database, configure table.") 
-    
-    database_mgroup.add_argument("--drop",
-                               action='store_true',
-                               help="drop database or destroy database.") 
+                                 action='store_true',
+                                 help="creating the database, configure table.")
 
-    database_parser.set_defaults(func=Database) 
+    database_mgroup.add_argument("--drop",
+                                 action='store_true',
+                                 help="drop database or destroy database.")
+
+    database_parser.set_defaults(func=Database)
 
     # create the parser for insert command
     # do insert if not exist else update
     insert_parser = subparsers.add_parser("insert",
-                               help="insert related commands.")
+                                          help="insert related commands.")
 
     insert_parser.add_argument("--username", "-un",
                                type=str,
@@ -596,7 +613,7 @@ def main():
                                required=True,
                                help="login password.")
 
-    insert_parser.add_argument("--email", 
+    insert_parser.add_argument("--email",
                                type=str,
                                required=True,
                                help="email id.")
@@ -606,22 +623,22 @@ def main():
                                type=str,
                                required=True,
                                help="unique name for the entry.")
-    
+
     insert_parser.add_argument("--detail", '-d',
                                type=str,
                                default='no-details',
                                help="detail about the entry.")
 
-    insert_parser.add_argument("--url", 
+    insert_parser.add_argument("--url",
                                type=str,
                                required=True,
                                help="login url.")
-    
-    insert_parser.set_defaults(func=Insert) 
+
+    insert_parser.set_defaults(func=Insert)
 
     # create the parser for finder command
     finder_parser = subparsers.add_parser("finder",
-                               help="find details.")
+                                          help="find details.")
 
     finder_parser.add_argument("--username", "-un",
                                type=str,
@@ -631,7 +648,7 @@ def main():
                                type=str,
                                help="match email id.")
 
-    finder_parser.add_argument("--unique-name", '-uqn', 
+    finder_parser.add_argument("--unique-name", '-uqn',
                                metavar='unique_name',
                                type=str,
                                help="match unique name.")
@@ -640,7 +657,7 @@ def main():
                                type=str,
                                help="match detail.")
 
-    finder_parser.add_argument("--url", 
+    finder_parser.add_argument("--url",
                                type=str,
                                help="match url.")
 
@@ -654,25 +671,24 @@ def main():
 
     finder_parser.set_defaults(func=Finder)
 
-
     # create the parser for passkey command
     passkey_parser = subparsers.add_parser("passkey",
-                               help="passkey create or update")
+                                           help="passkey create or update")
 
     passkey_parser.add_argument("--create", "-c",
-                               action='store_true',
-                               help="create new passkey for the first time")
+                                action='store_true',
+                                help="create new passkey for the first time")
 
     passkey_parser.add_argument("--update", "-u",
-                               action='store_true',
-                               help="update passkey, this will also update the \
+                                action='store_true',
+                                help="update passkey, this will also update the \
                                      user encryption details")
 
     passkey_parser.set_defaults(func=Passkey)
 
     # create the parser for update command
     update_parser = subparsers.add_parser("update",
-                               help="update user details.")
+                                          help="update user details.")
 
     update_parser.add_argument("--id",
                                type=int,
@@ -707,14 +723,14 @@ def main():
     update_parser.set_defaults(func=Update)
 
     # create the parser for export command
-    export_parser = subparsers.add_parser("export", 
-                               help="export user details options")
+    export_parser = subparsers.add_parser("export",
+                                          help="export user details options")
 
     # Common options for import and export
     export_parser.add_argument("--path",
                                type=str,
                                default='%s' % Setting.dump_path,
-                               help="path to dump the database "\
+                               help="path to dump the database "
                                     "(default: %(default)s)")
 
     export_parser.add_argument("--format",
@@ -726,13 +742,13 @@ def main():
     export_parser.set_defaults(func=Export)
 
     # create the parser for import command
-    import_parser = subparsers.add_parser("import", 
-                               help="import user details from file")
+    import_parser = subparsers.add_parser("import",
+                                          help="import user details from file")
     import_parser.add_argument("--file", '-f',
                                type=str,
                                help="full path to the import file.")
 
-    import_parser.add_argument("--format", 
+    import_parser.add_argument("--format",
                                type=str,
                                choices=['decrypt', 'encrypt'],
                                help="current data format, if its encrypted or decrypted")
@@ -740,4 +756,5 @@ def main():
     args = parser.parse_args()
     args.func(vars(args))()
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()
