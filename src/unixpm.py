@@ -70,10 +70,8 @@ def yes_no(arg):
 def get_input(msg=None, password=False):
     """get user raw_input"""
     if password:
-        if msg:
-            print '%s' % msg
         import getpass
-        input_str = str(getpass.getpass())
+        input_str = str(getpass.getpass(prompt='%s' % msg))
     else:
         if msg:
             print '%s:' % msg,
@@ -223,10 +221,13 @@ class Database(Setting, Cipher):
             print 'Do, you create passkey!'
             sys.exit(1)
 
+    @property
     def _is_password_correct(self):
         """verify the passkey type by the user with the one store in db"""
         salt, digest = self._get_salt_digest()
-        return self.verify_password(self.passkey, salt, digest)
+        if not self.verify_password(self.passkey, salt, digest):
+            print 'Failed: passkey verification'
+            sys.exit(1)
 
     def _drop(self, table_name):
         """drop datbase table"""
@@ -234,15 +235,13 @@ class Database(Setting, Cipher):
 
     def _drop_table(self):
         """drop datbase table if passkey is verified"""
-        self.passkey = get_input(password=True)
-        if self._is_password_correct():
-            for table in Setting.table_name:
-                self._drop(table)
-                print "Successfully dropped the database table %s" % table
-            return True
-        else:
-            print 'Failed: passkey verification'
-            sys.exit(1)
+        self.passkey = get_input(msg='Password: ', password=True)
+        self.verification = self._is_password_correct
+
+        for table in Setting.table_name:
+            self._drop(table)
+            print "Successfully dropped the database table %s" % table
+        return True
 
     def __call__(self):
         """Callable database class:"""
@@ -305,13 +304,10 @@ class Finder(Database):
 
     def __call__(self):
         # get passkey from user
-        self.passkey = get_input(msg=None, password=True)
+        self.passkey = get_input(msg='Password: ', password=True)
         self.decobj = Cipher(self.passkey)
-
         # verify passkey
-        if not self._is_password_correct():
-            print 'Failed: passkey verification'
-            sys.exit(1)
+        self.verification = self._is_password_correct
 
         result = self.select_all()
         self._result_lod = self._map_column(result)
@@ -369,13 +365,11 @@ class Insert(Finder):
 
     def __call__(self):
 
-        self.passkey = get_input(msg=None, password=True)
+        self.passkey = get_input(msg='Password: ', password=True)
         self.cipobj = Cipher(self.passkey)
         self.decobj = self.cipobj
         # verify passkey
-        if not self._is_password_correct():
-            print 'Failed: passkey verification'
-            sys.exit(1)
+        self.verification = self._is_password_correct
 
         """Callable class"""
 
@@ -450,12 +444,10 @@ class Update(Finder):
     def __call__(self):
 
         update_dict = {}
-        self.passkey = get_input(msg=None, password=True)
+        self.passkey = get_input(msg='Password: ', password=True)
         self.cipobj = Cipher(self.passkey)
         # verify old passkey
-        if not self._is_password_correct():
-            print 'Failed: old passkey verification'
-            sys.exit(1)
+        self.verification = self._is_password_correct
 
         for col in Setting.column_order['password_manager']:
             try:
@@ -491,14 +483,18 @@ class Passkey(Update):
 
     def _update_passkey(self):
 
-        self.passkey = get_input(msg=None, password=True)
+        self.passkey = get_input(msg='Old Password: ', password=True)
+
         self.decobj = Cipher(self.passkey)
-        self.new_passkey = get_input('New', password=True)
+        self.new_passkey = get_input('New Password: ', password=True)
+        self.new_passkeys = get_input(msg='Type Again: ', password=True)
+
+        if self.new_passkey != self.new_passkeys:
+            print 'Error: passkey not matching'
+            sys.exit(1)
 
         # verify old passkey
-        if not self._is_password_correct():
-            print 'Failed: old passkey verification'
-            sys.exit(1)
+        self.verification = self._is_password_correct
         print 'Successfully verified old passkey'
 
         # updating passkey
@@ -512,7 +508,13 @@ class Passkey(Update):
         # if exists then request the user to update the passkey and
         # re-encrypt the whole user details.
         if not self._is_exist_passkey():
-            passkey = get_input("Enter your new passkey", password=True)
+            passkey = get_input("Enter your new passkey: ", password=True)
+            passkeys = get_input(msg='Type Again: ', password=True)
+
+            if passkey != passkeys:
+                print 'Error: passkey not matching'
+                sys.exit(1)
+
             return self._insert_passkey(passkey)
         else:
             print "passkey already exists, please use [%s paskey --update]" % \
@@ -541,14 +543,12 @@ class Export(Finder):
     def __call__(self):
 
         # verify passkey
-        if not self._is_password_correct():
-            print 'Failed: passkey verification'
-            sys.exit(1)
+        self.verification = self._is_password_correct
+
+        if self.argument['format'] == 'decrypt':
+            result_all = self.select_all()
         else:
-            if self.argument['format'] == 'decrypt':
-                result_all = self.select_all()
-            else:
-                result_all = self.select_all(decrypt=False)
+            result_all = self.select_all(decrypt=False)
 
         _col = Setting.column_order['password_manager']
         _col.insert(0, 'id')
@@ -565,6 +565,25 @@ class Export(Finder):
             json.dump(result_lod, outfile, indent=4)
         print 'Succesfully exported user details into %s' % export_file
 
+
+class Delete(Database):
+
+    """Delete user details from database using id """
+
+    def __init__(self, *args):
+        super(Delete, self).__init__(*args)
+        self.passkey = get_input(msg=None, password=True)
+        self.decobj = Cipher(self.passkey)
+        self.verification = self._is_password_correct
+
+    def __call__(self):
+        _ids = self.argument['id']
+
+        for _id in _ids:
+            sql_cmd = ("DELETE from %s where id='%s'" %
+                      ( Setting.table_name['password_manager'], _id ))
+            self.execute(sql_cmd)
+            print "Successfully deleted id=%d" % _id
 
 def main():
     """Main function."""
@@ -740,6 +759,17 @@ def main():
                                help="export format, (default: %(default)s).")
 
     export_parser.set_defaults(func=Export)
+
+    # create the parser for delete command
+    delete_parser = subparsers.add_parser("delete",
+                                          help="delete user details using id")
+    delete_parser.add_argument("--id", '-id',
+                               nargs='+',
+                               type=int,
+                               required=True,
+                               help="ID to delete, support multiple ids")
+
+    delete_parser.set_defaults(func=Delete)
 
     # create the parser for import command
     import_parser = subparsers.add_parser("import",
