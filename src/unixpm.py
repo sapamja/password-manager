@@ -130,8 +130,7 @@ class Cipher(object):
     def __init__(self, passkey):
         self.msg = None
         self.passkey = get_md5(passkey)
-        self.encobj = AES.new(self.passkey, AES.MODE_ECB)
-        self.decobj = self.encobj
+        self.aes_obj = AES.new(self.passkey, AES.MODE_ECB)
 
     def get_password_digest(self, password, salt=None):
         if not salt:
@@ -159,13 +158,13 @@ class Cipher(object):
 
     def encrypt(self, msg):
         """Encrypt the original msg before storing into the database"""
-        ciphertxt = self.encobj.encrypt(self.pad(str(msg)))
+        ciphertxt = self.aes_obj.encrypt(self.pad(str(msg)))
         return ciphertxt.encode('hex')
 
     def decrypt(self, ciphertxt):
         """Decrypt for human reading"""
         try:
-            pad = self.decobj.decrypt(binascii.unhexlify(ciphertxt))
+            pad = self.aes_obj.decrypt(binascii.unhexlify(ciphertxt))
         except TypeError as error:
             raise TypeError(error)
 
@@ -371,7 +370,6 @@ class Insert(Finder):
 
         self.passkey = get_input(msg='Password: ', password=True)
         self.cipobj = Cipher(self.passkey)
-        self.decobj = self.cipobj
         # verify passkey
         self.verification = self._is_password_correct
 
@@ -544,8 +542,8 @@ class Import(Insert):
         # verify passkey
         self.passkey = get_input(msg='Password: ', password=True)
         self.verification = self._is_password_correct
-        self.decobj = Cipher(self.passkey)
-        self.cipobj = self.decobj
+        self.cipobj = Cipher(self.passkey)
+        self.cipobj = self.cipobj
 
     def _read_dumps(self):
         """read database dump from file"""
@@ -568,7 +566,7 @@ class Import(Insert):
                 new_dics = dict()
                 for d, v in dics.items():
                     if d != 'id':
-                        new_dics[d] = self.decobj.decrypt(v)
+                        new_dics[d] = self.cipobj.decrypt(v)
                 self.new_json_docs.append(new_dics)
 
             self.json_docs = self.new_json_docs
