@@ -20,6 +20,7 @@ import hashlib
 import binascii
 import argparse
 import sqlite3
+import operator
 
 from Crypto.Cipher import AES
 
@@ -158,28 +159,31 @@ class Cipher(object):
 
     def encrypt(self, msg):
         """Encrypt the original msg before storing into the database"""
-        ciphertxt = self.encobj.encrypt(self.pad(msg))
+        ciphertxt = self.encobj.encrypt(self.pad(str(msg)))
         return ciphertxt.encode('hex')
 
     def decrypt(self, ciphertxt):
         """Decrypt for human reading"""
-        pad = self.decobj.decrypt(binascii.unhexlify(ciphertxt))
-        return self.unpad(pad)
+        try:
+            pad = self.decobj.decrypt(binascii.unhexlify(ciphertxt))
+        except TypeError as error:
+            raise TypeError(error)
 
+        return self.unpad(pad)
 
 class Database(Setting, Cipher):
 
     """Create database table, drop table"""
 
     def __init__(self, args):
-        self.passkey = None
         self.argument = args
+        #super(Cipher, self).__init__(*args)
 
     def connect(self):
         """Connect to database"""
         try:
             self.conn = sqlite3.connect('%s/%s' %
-                                        (Setting.db_path, Setting.db_name))
+                                       (Setting.db_path, Setting.db_name))
             self.cursor = self.conn.cursor()
         except Exception as error:
             raise Exception(error)
@@ -293,7 +297,7 @@ class Finder(Database):
         if decrypt:
             for c in result.fetchall():
                 to_decrypt = c[1:]
-                ls = [self.decobj.decrypt(x) for x in to_decrypt]
+                ls = [self.cipobj.decrypt(x) for x in to_decrypt]
                 ls.insert(0, c[0])
                 decrypted.append(ls)
         else:
@@ -305,7 +309,7 @@ class Finder(Database):
     def __call__(self):
         # get passkey from user
         self.passkey = get_input(msg='Password: ', password=True)
-        self.decobj = Cipher(self.passkey)
+        self.cipobj = Cipher(self.passkey)
         # verify passkey
         self.verification = self._is_password_correct
 
@@ -395,7 +399,7 @@ class Insert(Finder):
                        'url'      : f.uri(),
                      }
             self.insert_data(**kwargs)
-        """
+       """ 
 
 
 class Update(Finder):
@@ -407,7 +411,7 @@ class Update(Finder):
 
     def _update_data(self, _id, **kwargs):
         """Re-Encrypt data with new passkey and update data"""
-        self.cipobj = Cipher(self.passkey)
+        self.cipobj = Cipher(self   .passkey)
         encrypted_dict = {key: self.cipobj.encrypt(kwargs[key])
                           for key in kwargs.keys()}
 
@@ -485,7 +489,7 @@ class Passkey(Update):
 
         self.passkey = get_input(msg='Old Password: ', password=True)
 
-        self.decobj = Cipher(self.passkey)
+        self.cipobj = Cipher(self.passkey)
         self.new_passkey = get_input('New Password: ', password=True)
         self.new_passkeys = get_input(msg='Type Again: ', password=True)
 
@@ -530,15 +534,62 @@ class Passkey(Update):
         else:
             print "nothing to do, please check usage"
 
+class Import(Insert):
+    
+    """Import users details fromt the json dump"""
 
+    def __init__(self, *args):
+        super(Import, self).__init__(*args)
+        self.encrypt = None
+        # verify passkey
+        self.passkey = get_input(msg='Password: ', password=True)
+        self.verification = self._is_password_correct
+        self.decobj = Cipher(self.passkey)
+        self.cipobj = self.decobj
+
+    def _read_dumps(self):
+        """read database dump from file"""
+        try:
+            with open(self._file_path, 'r') as json_data:
+                data = json.load(json_data)
+            return data
+        except Exception as error:
+            raise Exception (error)
+
+    def __call__(self):
+
+        self._format = self.argument['format']
+        self._file_path = self.argument['file'] 
+        self.json_docs = self._read_dumps()
+
+        if self._format == 'encrypt':
+            self.new_json_docs = list()
+            for dics in sorted(self.json_docs, key=operator.itemgetter('url')):
+                new_dics = dict()
+                for d, v in dics.items():
+                    if d != 'id':
+                        new_dics[d] = self.decobj.decrypt(v)
+                self.new_json_docs.append(new_dics)
+
+            self.json_docs = self.new_json_docs
+
+        for dics in sorted(self.json_docs, key=operator.itemgetter('url')):
+            if not self.is_exist(**dics):
+                self.insert_data(**dics)
+            else:
+                print "Similar data exist, please check using finder."
+                print "You can't insert same [username, email and url] "\
+                      "which doesn't make sense."
+
+            
 class Export(Finder):
 
     """Export user details to file { encrypt or decrypt } base on the users"""
 
     def __init__(self, *args):
         super(Export, self).__init__(*args)
-        self.passkey = get_input(msg=None, password=True)
-        self.decobj = Cipher(self.passkey)
+        self.passkey = get_input(msg='Password: ', password=True)
+        self.cipobj = Cipher(self.passkey)
 
     def __call__(self):
 
@@ -563,22 +614,23 @@ class Export(Finder):
         # open export file
         with open(export_file, "w") as outfile:
             json.dump(result_lod, outfile, indent=4)
+
         print 'Succesfully exported user details into %s' % export_file
 
 
-class Delete(Database):
+class Delete(Database, Cipher):
 
     """Delete user details from database using id """
 
     def __init__(self, *args):
         super(Delete, self).__init__(*args)
-        self.passkey = get_input(msg=None, password=True)
-        self.decobj = Cipher(self.passkey)
+        self.passkey = get_input(msg='Password: ', password=True)
+        self.cipobj = Cipher(self.passkey)
         self.verification = self._is_password_correct
 
     def __call__(self):
-        _ids = self.argument['id']
 
+        _ids = self.argument['id']
         for _id in _ids:
             sql_cmd = ("DELETE from %s where id='%s'" %
                       ( Setting.table_name['password_manager'], _id ))
@@ -775,13 +827,17 @@ def main():
     import_parser = subparsers.add_parser("import",
                                           help="import user details from file")
     import_parser.add_argument("--file", '-f',
+                               required=True,
                                type=str,
                                help="full path to the import file.")
 
     import_parser.add_argument("--format",
+                               required=True,
                                type=str,
                                choices=['decrypt', 'encrypt'],
                                help="current data format, if its encrypted or decrypted")
+
+    import_parser.set_defaults(func=Import)
 
     args = parser.parse_args()
     args.func(vars(args))()
