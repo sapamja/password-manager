@@ -198,6 +198,14 @@ class Database(Setting, Cipher):
             self.conn.commit()
         return result
 
+    @property
+    def _is_password_correct(self):
+        """verify the passkey type by the user with the one store in db"""
+        salt, digest = self._get_salt_digest()
+        if not self.verify_password(self.passkey, salt, digest):
+            print 'Failed: passkey verification'
+            sys.exit(1)
+
     def _create(self, table_name, **kwargs):
         cmd = ', '.join(['%s %s' % (k, kwargs[k]) for k in
               Setting.column_order[table_name]])
@@ -212,7 +220,31 @@ class Database(Setting, Cipher):
         """create table based on the config define in Setting class"""
         for tb, dic in Setting.column_table.items():
             self._create(tb, **dic)
+
+        # creating passkey after creating the database table
+        self._create_passkey()
         return True
+
+    def _insert_passkey(self, pak):
+        salt, digest = self.get_password_digest(pak)
+        sql_cmd = "INSERT INTO passkey_manager (salt, digest) VALUES \
+                  ('{0}', '{1}')".format(salt, digest)
+        self.execute(sql_cmd)
+        print "Successfully created new passkey"
+        return True
+
+    def _create_passkey(self):
+        # check is there any passkey already exists
+        # if exists then request the user to update the passkey and
+        # re-encrypt the whole user details.
+        passkey = get_input("Enter your new passkey: ", password=True)
+        passkeys = get_input(msg='Type Again: ', password=True)
+
+        if passkey != passkeys:
+            print 'Error: passkey not matching'
+            sys.exit(1)
+
+        return self._insert_passkey(passkey)
 
     def _get_salt_digest(self):
         """return salt, digest from db"""
@@ -222,14 +254,6 @@ class Database(Setting, Cipher):
         except:
             print 'Failed to get passkey from database'
             print 'Do, you create passkey!'
-            sys.exit(1)
-
-    @property
-    def _is_password_correct(self):
-        """verify the passkey type by the user with the one store in db"""
-        salt, digest = self._get_salt_digest()
-        if not self.verify_password(self.passkey, salt, digest):
-            print 'Failed: passkey verification'
             sys.exit(1)
 
     def _drop(self, table_name):
@@ -245,6 +269,23 @@ class Database(Setting, Cipher):
             self._drop(table)
             print "Successfully dropped the database table %s" % table
         return True
+
+    def select_all(self, decrypt=True):
+        sql_cmd = "SELECT * from {0}".format(
+            Setting.table_name['password_manager'])
+        result = self.execute(sql_cmd)
+        decrypted = list()
+        if decrypt:
+            for c in result.fetchall():
+                to_decrypt = c[1:]
+                ls = [self.cipobj.decrypt(x) for x in to_decrypt]
+                ls.insert(0, c[0])
+                decrypted.append(ls)
+        else:
+            for c in result.fetchall():
+                decrypted.append(c)
+
+        return decrypted 
 
     def __call__(self):
         """Callable database class:"""
@@ -287,23 +328,6 @@ class Finder(Database):
                     ret.append(dic)
                     break
         return ret
-
-    def select_all(self, decrypt=True):
-        sql_cmd = "SELECT * from {0}".format(
-            Setting.table_name['password_manager'])
-        result = self.execute(sql_cmd)
-        decrypted = list()
-        if decrypt:
-            for c in result.fetchall():
-                to_decrypt = c[1:]
-                ls = [self.cipobj.decrypt(x) for x in to_decrypt]
-                ls.insert(0, c[0])
-                decrypted.append(ls)
-        else:
-            for c in result.fetchall():
-                decrypted.append(c)
-
-        return decrypted
 
     def __call__(self):
         # get passkey from user
@@ -375,6 +399,7 @@ class Insert(Finder):
 
         """Callable class"""
 
+        """ 
         kwargs = {x: self.argument[x]
                   for x in Setting.column_order['password_manager']}
         if not self.is_exist(**kwargs):
@@ -397,7 +422,7 @@ class Insert(Finder):
                        'url'      : f.uri(),
                      }
             self.insert_data(**kwargs)
-       """ 
+       #""" 
 
 
 class Update(Finder):
@@ -475,14 +500,6 @@ class Passkey(Update):
         sql_cmd = "SELECT * from passkey_manager ORDER BY ID DESC LIMIT 1"
         return self.execute(sql_cmd).fetchone()
 
-    def _insert_passkey(self, pak):
-        salt, digest = self.get_password_digest(pak)
-        sql_cmd = "INSERT INTO passkey_manager (salt, digest) VALUES \
-                  ('{0}', '{1}')".format(salt, digest)
-        self.execute(sql_cmd)
-        print "Successfully created new passkey"
-        return True
-
     def _update_passkey(self):
 
         self.passkey = get_input(msg='Old Password: ', password=True)
@@ -505,32 +522,9 @@ class Passkey(Update):
         # updating password_manager table with new passkey encryption
         self._update_all_details()
 
-    def _create_passkey(self):
-        # check is there any passkey already exists
-        # if exists then request the user to update the passkey and
-        # re-encrypt the whole user details.
-        if not self._is_exist_passkey():
-            passkey = get_input("Enter your new passkey: ", password=True)
-            passkeys = get_input(msg='Type Again: ', password=True)
-
-            if passkey != passkeys:
-                print 'Error: passkey not matching'
-                sys.exit(1)
-
-            return self._insert_passkey(passkey)
-        else:
-            print "passkey already exists, please use [%s paskey --update]" % \
-                __file__
-            return False
-
     def __call__(self):
         """Callable Class"""
-        if self.argument['create']:
-            self._create_passkey()
-        elif self.argument['update']:
-            self._update_passkey()
-        else:
-            print "nothing to do, please check usage"
+        self._update_passkey()
 
 class Import(Insert):
     
@@ -659,7 +653,8 @@ def main():
 
     database_mgroup.add_argument("--create",
                                  action='store_true',
-                                 help="creating the database, configure table.")
+                                 help="creating the database, configure table" 
+                                      ", generate new passkey.")
 
     database_mgroup.add_argument("--drop",
                                  action='store_true',
@@ -744,11 +739,8 @@ def main():
     passkey_parser = subparsers.add_parser("passkey",
                                            help="passkey create or update")
 
-    passkey_parser.add_argument("--create", "-c",
-                                action='store_true',
-                                help="create new passkey for the first time")
-
     passkey_parser.add_argument("--update", "-u",
+                                required=True,
                                 action='store_true',
                                 help="update passkey, this will also update the \
                                      user encryption details")
