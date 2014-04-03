@@ -467,7 +467,7 @@ class Passkey(Update):
     """Create and Update passkey to unlock user details."""
 
     def __init__(self, *args):
-        super(Update, self).__init__(*args)
+        super(Passkey, self).__init__(*args)
 
     def _is_exist_passkey(self):
         sql_cmd = "SELECT * from passkey_manager ORDER BY ID DESC LIMIT 1"
