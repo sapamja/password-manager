@@ -154,6 +154,53 @@ You can't insert same [username, email and url] which doesn't make sense.
 $:>
 </pre></code>
 
+                <li>If you ve lots of user info then you can store into a file in json format and import it</li>
+
+<pre><code>
+
+# import from decrypted plain text
+
+./unixpm import --file file.json --format decrypt
+
+eg: file.json
+[
+    {
+        "username": "Ivory Auer IV",
+        "unique_name": "ppacocha",
+        "url": "http://www.watsica.com/blog/register/",
+        "detail": "Error.",
+        "email": "roberts.theodora@jakubowski.info",
+        "password": "officiis",
+        "id": 100
+    },
+    {
+        "username": "Sidney Parisian",
+        "unique_name": "kaylin78",
+        "url": "http://www.wiza.com/explore/app/category/",
+        "detail": "Placeat.",
+        "email": "marquise.thiel@yahoo.com",
+        "password": "fugit",
+        "id": 101
+    }
+]
+
+# import from encrypted text, you will need the pass key
+
+./unixpm import --file file.json --format encrypt
+[
+    {
+        "username": "2932b8d647cac00bb71bb2c3e6f06808",
+        "unique_name": "2711e59334735cddecb3b4505dcc4851",
+        "url": "3e6848fbd67547230945de7bdfd69268667a9ddf1ceb205ddde0064c9a9c6f68564de820b038c9c146c53085f94112bd",
+        "detail": "26abeaec4463e3e3cd4cd66c521a7d16",
+        "email": "b4a863b60bce9ec0db10c1b5d3028959f3a106436d77a59e93872849231b726d",
+        "password": "b2ca60dd550eaa5ff66425fe04d74e19",
+        "id": 101
+    }
+]
+
+</pre></code>
+
                 <h3>Step 4</h4>
                 <li>verify it</li>
 
