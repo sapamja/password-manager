@@ -29,7 +29,7 @@ Install XCODE and run as below:
 
 sudo export ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 
-2. Install PrettyTable
+#### 2. Install PrettyTable
 
 ```
 sudo pip install PrettyTable
