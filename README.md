@@ -5,7 +5,11 @@ Storing Encrypted user details including password, username, email or url with p
 Project page: http://sapamja.github.io/password-manager/
 
 
-### Install pycrypto
+### Install 
+
+### XCODE and command line tool will require to compile pycrypto.
+
+#### 1. Install pycrypto 
 
 While installing if you got the following error:
 
@@ -25,6 +29,20 @@ Install XCODE and run as below:
 
 sudo export ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 
+2. Install PrettyTable
+
+```
+sudo pip install PrettyTable
+Downloading/unpacking PrettyTable
+  Downloading prettytable-0.7.2.tar.bz2
+  Running setup.py (path:/private/tmp/pip_build_root/PrettyTable/setup.py) egg_info for package PrettyTable
+
+Installing collected packages: PrettyTable
+  Running setup.py install for PrettyTable
+
+Successfully installed PrettyTable
+Cleaning up...
+```
 
 ### AES Encryption
 
