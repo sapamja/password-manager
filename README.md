@@ -7,7 +7,7 @@ Project page: http://sapamja.github.io/password-manager/
 
 ### Install 
 
-### XCODE and command line tool will require to compile pycrypto.
+#### Install xcode and command line tool which will require to compile pycrypto.
 
 #### 1. Install pycrypto 
 
@@ -44,8 +44,8 @@ Successfully installed PrettyTable
 Cleaning up...
 ```
 
-### AES Encryption
 
+### AES Encryption
 
 ## Usage:
 
